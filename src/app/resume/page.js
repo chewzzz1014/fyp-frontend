@@ -1,117 +1,203 @@
-"use client"
-"use client"
+// "use client";
 
-import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// import React, { useState } from "react";
+// import {
+//     Box,
+//     Typography,
+//     TextField,
+//     MenuItem,
+//     Button,
+//     Select,
+//     FormControl,
+//     InputLabel,
+//     Card,
+//     CardContent,
+//     FormHelperText,
+//     Grid
+// } from "@mui/material";
+// import { resume_text_1, resume_text_2 } from "../_constants/resume";
 
-// Define the statuses in an array
-const statuses = ["applied", "interviewing", "offer", "rejected"];
+// export default function ResumePage() {
+//     // Sample resumes
+//     const uploadedResumes = [
+//         { id: 1, name: "Resume 1", content: resume_text_1 },
+//         { id: 2, name: "Resume 2", content: resume_text_2 },
+//     ];
 
-// Initial job application data
-const initialData = [
-    { id: "1", position: "Software Engineer", company: "Company A", link: "https://company-a.com", score: 75, status: "applied" },
-    { id: "2", position: "Data Scientist", company: "Company B", link: "https://company-b.com", score: 80, status: "applied" },
-    { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing" },
-    { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer" },
-    { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected" },
-];
+//     // State for resume selection and preview
+//     const [selectedResume, setSelectedResume] = useState(null);
 
-export default function Resume() {
-    // Set the state for the jobs grouped by status
-    const [data, setData] = useState({
-        applied: initialData.filter(job => job.status === "applied"),
-        interviewing: initialData.filter(job => job.status === "interviewing"),
-        offer: initialData.filter(job => job.status === "offer"),
-        rejected: initialData.filter(job => job.status === "rejected"),
-    });
+//     // Handle resume selection
+//     const handleResumeChange = (event) => {
+//         const resumeId = event.target.value;
+//         const resume = uploadedResumes.find((r) => r.id === resumeId);
+//         setSelectedResume(resume);
+//     };
 
-    // Function to handle drag and drop
-    const onDragEnd = (result) => {
-        const { destination, source, draggableId } = result;
+//     return (
+//         <div className="min-h-screen p-8">
+//             <h1 className="text-3xl font-bold mb-8">Job-Resume Matching Evaluation</h1>
 
-        // If dropped outside the board, do nothing
-        if (!destination) return;
+//             <Box mb={4} sx={{ mx: 4 }}>
+//                 <Typography variant="h5" gutterBottom>
+//                     Resume
+//                 </Typography>
+//                 <FormControl fullWidth sx={{ mb: 2 }}>
+//                     <InputLabel>Select a Resume</InputLabel>
+//                     <Select
+//                         value={selectedResume ? selectedResume.id : ""}
+//                         onChange={handleResumeChange}
+//                         label="Select a Resume"
+//                     >
+//                         {uploadedResumes.map((resume) => (
+//                             <MenuItem key={resume.id} value={resume.id}>
+//                                 {resume.name}
+//                             </MenuItem>
+//                         ))}
+//                     </Select>
+//                 </FormControl>
+//             </Box>
 
-        // If the card was dropped in the same place, do nothing
-        if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+//             {
+//                 selectedResume && (
+//                     <Box mb={4} sx={{ mx: 4 }}>
+//                         <Typography variant="h5" gutterBottom>
+//                             Named Entity Recognition
+//                         </Typography>
+//                         <Card variant="outlined">
+//                             <CardContent>
+//                                 <Typography variant="subtitle1">
+//                                     <strong>Preview:</strong>
+//                                 </Typography>
+//                                 <Typography>{selectedResume.content}</Typography>
+//                             </CardContent>
+//                         </Card>
+//                     </Box>
+//                 )
+//             }
+//         </div>
+//     );
+// }
+"use client";
 
-        // Find the source and destination arrays
-        const start = data[source.droppableId];
-        const end = data[destination.droppableId];
+import React, { useState } from "react";
+import {
+    Box,
+    Typography,
+    TextField,
+    MenuItem,
+    Button,
+    Select,
+    FormControl,
+    InputLabel,
+    Card,
+    CardContent,
+    FormHelperText,
+    Grid,
+    IconButton
+} from "@mui/material";
+import { resume_text_1, resume_text_2 } from "../_constants/resume";
+import AddIcon from "@mui/icons-material/Add";
+import { useRouter } from 'next/navigation';
 
-        // Find the card that was moved
-        const [movedCard] = start.splice(source.index, 1);
-        movedCard.status = destination.droppableId; // Update the status based on where it was dropped
+export default function ResumePage() {
+    // Sample resumes
+    const uploadedResumes = [
+        { id: 1, name: "Resume 1", content: resume_text_1 },
+        { id: 2, name: "Resume 2", content: resume_text_2 },
+    ];
 
-        // Update the state with the new positions
-        end.splice(destination.index, 0, movedCard);
+    // State for resume selection, preview, and file upload
+    const [selectedResume, setSelectedResume] = useState(null);
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState("");
 
-        setData({
-            ...data,
-            [source.droppableId]: start,
-            [destination.droppableId]: end,
-        });
+    const router = useRouter();
+
+    // Handle resume selection
+    const handleResumeChange = (event) => {
+        const resumeId = event.target.value;
+        const resume = uploadedResumes.find((r) => r.id === resumeId);
+        setError("");
+        setSelectedResume(resume);
     };
 
-    // Function to get the color for each status
-    const getColumnColor = (status) => {
-        switch (status) {
-            case "applied":
-                return "bg-blue-100";
-            case "interviewing":
-                return "bg-yellow-100";
-            case "offer":
-                return "bg-green-100";
-            case "rejected":
-                return "bg-red-100";
-            default:
-                return "bg-gray-100";
+    // Handle file upload
+    const handleFileUpload = (event) => {
+        const uploadedFile = event.target.files[0];
+        if (uploadedFile && uploadedFile.type === "application/pdf") {
+            // Mock file processing and add to resumes
+            const newResume = {
+                id: uploadedResumes.length + 1,
+                name: uploadedFile.name,
+                content: "Content extracted from uploaded resume (mock content)", // Replace with actual PDF parsing logic
+            };
+            uploadedResumes.push(newResume);
+            setFile(uploadedFile);
+            setError("");
+            setSelectedResume(newResume);
+            // router.refresh(); // Refresh the page to reflect the newly uploaded resume in selection
+        } else {
+            setError("Please upload a valid PDF file.");
         }
     };
 
     return (
         <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-8">Resume</h1>
+            <h1 className="text-3xl font-bold mb-8">Job-Resume Matching Evaluation</h1>
 
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex gap-4 justify-around text-black">
-                    {/* Iterate over the statuses array to create columns dynamically */}
-                    {statuses.map(status => (
-                        <Droppable key={status} droppableId={status}>
-                            {(provided) => (
-                                <div
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                    className={`${getColumnColor(status)} p-4 rounded-lg w-1/4`}
-                                >
-                                    <h2 className="text-lg font-semibold">{status.charAt(0).toUpperCase() + status.slice(1)}</h2>
-                                    <div className="space-y-4 mt-4">
-                                        {/* Render the job cards for each status */}
-                                        {data[status].map((job, index) => (
-                                            <Draggable key={job.id} draggableId={job.id} index={index}>
-                                                {(provided) => (
-                                                    <div
-                                                        ref={provided.innerRef}
-                                                        {...provided.draggableProps}
-                                                        {...provided.dragHandleProps}
-                                                        className="bg-white p-4 rounded-lg shadow-md"
-                                                    >
-                                                        <h3 className="font-semibold">{job.position}</h3>
-                                                        <p>{job.company}</p>
-                                                        <a href={job.link} target="_blank" className="text-blue-500 text-sm">Application Link</a>
-                                                        <div className="mt-2 text-sm">Job-Resume Score: {job.score}%</div>
-                                                    </div>
-                                                )}
-                                            </Draggable>
-                                        ))}
-                                        {provided.placeholder}
-                                    </div>
-                                </div>
-                            )}
-                        </Droppable>
-                    ))}
-                </div>
-            </DragDropContext>
+            <Box mb={4} sx={{ mx: 4 }}>
+                <Typography variant="h5" gutterBottom>
+                    Resume
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <FormControl fullWidth sx={{ mr: 2 }}>
+                        <InputLabel>Select a Resume</InputLabel>
+                        <Select
+                            value={selectedResume ? selectedResume.id : ""}
+                            onChange={handleResumeChange}
+                            label="Select a Resume"
+                        >
+                            {uploadedResumes.map((resume) => (
+                                <MenuItem key={resume.id} value={resume.id} selected={selectedResume ? selectedResume.id === resume.id : false}>
+                                    {resume.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <IconButton
+                        color="primary"
+                        onClick={() => document.getElementById("file-input").click()}
+                        sx={{ backgroundColor: "#1565c0", ":hover": { backgroundColor: "#049DD9" } }}
+                    >
+                        <AddIcon sx={{ color: "#ffffff" }} />
+                    </IconButton>
+                    <input
+                        type="file"
+                        id="file-input"
+                        accept="application/pdf"
+                        style={{ display: "none" }}
+                        onChange={handleFileUpload}
+                    />
+                </Box>
+                {error && <FormHelperText error>{error}</FormHelperText>}
+            </Box>
+
+            {selectedResume && (
+                <Box mb={4} sx={{ mx: 4 }}>
+                    <Typography variant="h5" gutterBottom>
+                        Named Entity Recognition
+                    </Typography>
+                    <Card variant="outlined">
+                        <CardContent>
+                            <Typography variant="subtitle1">
+                                <strong>Preview:</strong>
+                            </Typography>
+                            <Typography>{selectedResume.content}</Typography>
+                        </CardContent>
+                    </Card>
+                </Box>
+            )}
         </div>
     );
 }
