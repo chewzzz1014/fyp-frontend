@@ -1,83 +1,3 @@
-// "use client";
-
-// import React, { useState } from "react";
-// import {
-//     Box,
-//     Typography,
-//     TextField,
-//     MenuItem,
-//     Button,
-//     Select,
-//     FormControl,
-//     InputLabel,
-//     Card,
-//     CardContent,
-//     FormHelperText,
-//     Grid
-// } from "@mui/material";
-// import { resume_text_1, resume_text_2 } from "../_constants/resume";
-
-// export default function ResumePage() {
-//     // Sample resumes
-//     const uploadedResumes = [
-//         { id: 1, name: "Resume 1", content: resume_text_1 },
-//         { id: 2, name: "Resume 2", content: resume_text_2 },
-//     ];
-
-//     // State for resume selection and preview
-//     const [selectedResume, setSelectedResume] = useState(null);
-
-//     // Handle resume selection
-//     const handleResumeChange = (event) => {
-//         const resumeId = event.target.value;
-//         const resume = uploadedResumes.find((r) => r.id === resumeId);
-//         setSelectedResume(resume);
-//     };
-
-//     return (
-//         <div className="min-h-screen p-8">
-//             <h1 className="text-3xl font-bold mb-8">Job-Resume Matching Evaluation</h1>
-
-//             <Box mb={4} sx={{ mx: 4 }}>
-//                 <Typography variant="h5" gutterBottom>
-//                     Resume
-//                 </Typography>
-//                 <FormControl fullWidth sx={{ mb: 2 }}>
-//                     <InputLabel>Select a Resume</InputLabel>
-//                     <Select
-//                         value={selectedResume ? selectedResume.id : ""}
-//                         onChange={handleResumeChange}
-//                         label="Select a Resume"
-//                     >
-//                         {uploadedResumes.map((resume) => (
-//                             <MenuItem key={resume.id} value={resume.id}>
-//                                 {resume.name}
-//                             </MenuItem>
-//                         ))}
-//                     </Select>
-//                 </FormControl>
-//             </Box>
-
-//             {
-//                 selectedResume && (
-//                     <Box mb={4} sx={{ mx: 4 }}>
-//                         <Typography variant="h5" gutterBottom>
-//                             Named Entity Recognition
-//                         </Typography>
-//                         <Card variant="outlined">
-//                             <CardContent>
-//                                 <Typography variant="subtitle1">
-//                                     <strong>Preview:</strong>
-//                                 </Typography>
-//                                 <Typography>{selectedResume.content}</Typography>
-//                             </CardContent>
-//                         </Card>
-//                     </Box>
-//                 )
-//             }
-//         </div>
-//     );
-// }
 "use client";
 
 import React, { useState } from "react";
@@ -144,7 +64,7 @@ export default function ResumePage() {
 
     return (
         <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-8">Job-Resume Matching Evaluation</h1>
+            <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
 
             <Box mb={4} sx={{ mx: 4 }}>
                 <Typography variant="h5" gutterBottom>
@@ -190,9 +110,6 @@ export default function ResumePage() {
                     </Typography>
                     <Card variant="outlined">
                         <CardContent>
-                            <Typography variant="subtitle1">
-                                <strong>Preview:</strong>
-                            </Typography>
                             <Typography>{selectedResume.content}</Typography>
                         </CardContent>
                     </Card>

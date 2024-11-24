@@ -81,7 +81,7 @@ export default function JobResumePage() {
 
     return (
         <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-8">Job-Resume Matching Evaluation</h1>
+            <h1 className="text-3xl font-bold mb-8 mx-8">Job-Resume Matching Evaluation</h1>
 
             <form onSubmit={handleSubmit}>
                 {/* Resume Section */}
@@ -202,10 +202,9 @@ export default function JobResumePage() {
                     </Grid>
                 </Box>
 
-                {/* Submit Button */}
                 <Box textAlign="center">
                     <Button type="submit" variant="contained" color="primary">
-                        Submit
+                        Analyse
                     </Button>
                 </Box>
             </form>
