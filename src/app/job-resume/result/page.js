@@ -12,37 +12,39 @@ import {
     Divider,
     Paper,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function JobResumeMatchingPage() {
     // Sample data
-    const resumeText = `
-    John Doe is an experienced software engineer with expertise in developing scalable web applications. 
-    He has proficiency in JavaScript, React, Node.js, and Python. Additionally, he holds certifications in cloud computing and DevOps.
-  `;
+    const resumeText = `John Doe is an experienced software engineer with expertise in developing scalable web applications. 
+    He has proficiency in JavaScript, React, Node.js, and Python. Additionally, he holds certifications in cloud computing and DevOps.`;
 
-    const jobDescriptionText = `
-    Looking for a software engineer to develop and maintain high-quality web applications. 
+    const jobDescriptionText = `Looking for a software engineer to develop and maintain high-quality web applications. 
     The candidate should be proficient in JavaScript, React, and have experience with REST APIs. 
-    Prior knowledge of Python and DevOps practices is a plus.
-  `;
+    Prior knowledge of Python and DevOps practices is a plus.`;
 
-    const resumeSkills = ["JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps"];
-    const jobSkills = ["JavaScript", "React", "REST APIs", "Python", "DevOps"];
+    const resumeSkills = ["JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps", "JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps"];
+    const jobSkills = ["JavaScript", "React", "REST APIs", "Python", "DevOps", "JavaScript", "React", "REST APIs", "Python", "DevOps"];
 
     // Placeholder for job-resume matching score
     const [matchingScore, setMatchingScore] = useState(0.00);
+    const router = useRouter();
 
     // Simulate a job-resume matching function
     const calculateMatchingScore = () => {
-        // Mock score calculation logic (replace with real implementation)
         const overlap = resumeSkills.filter(skill => jobSkills.includes(skill)).length;
         const score = Math.round((overlap / jobSkills.length) * 100); // Based on skill overlap
         setMatchingScore(score);
     };
 
+    // Handle "Done" button click
+    const handleDoneClick = () => {
+        router.push("/dashboard"); // Redirect to dashboard
+    };
+
     return (
         <Box className="mx-4">
-           <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
+            <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
 
             {/* Skills and Matching Score Section */}
             <Paper elevation={3} sx={{ p: 3, mb: 4, mx:4 }}>
@@ -106,6 +108,17 @@ export default function JobResumeMatchingPage() {
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* Done Button */}
+            <Box textAlign="center" mt={4}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleDoneClick}
+                >
+                    Done
+                </Button>
+            </Box>
         </Box>
     );
 }

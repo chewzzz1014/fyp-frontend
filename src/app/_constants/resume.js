@@ -47,3 +47,32 @@ John Doe lives at 1234 Elm Street in Los Angeles, CA 90001. He can be reached at
 
 John holds a Master of Science in Computer Science from the University of California, Berkeley, with a graduation date of May 2017, and a Bachelor of Science in Information Technology from the University of Texas at Austin, graduated in May 2015. His skillset includes proficiency in programming languages like Python, JavaScript, and Java; frameworks such as React, Flask, and Django; cloud platforms including AWS, Google Cloud, and Azure; as well as other tools like Git, Docker, Kubernetes, and SQL. He is certified as an AWS Certified Solutions Architect – Associate, earned in 2020, and as a Google Professional Cloud Architect, earned in 2021'
 `
+
+export const job_desc = `
+Basic information
+Location: Kuala Lumpur
+Working years: More than 1 years
+Department: Ant International
+Education background: Undergraduate
+Release time: 2024.11.15
+Job description
+Headquartered in Singapore, Ant International powers the future of global commerce with digital innovation for everyone and every business to thrive. In close collaboration with partners, we support merchants of all sizes worldwide to realize their growth aspirations through a comprehensive range of tech-driven digital payment and financial services solutions.
+
+We are seeking for Java Software Engineers for our Malaysia Tech Center, work on end-to-end solutions for cross-border payments for our global merchants and globalization business.
+
+Key Responsibilities:
+1. Design solutions involving integration with multiple systems and services.
+2. Develop high volume, high performance, low latency and reliable mission critical applications.
+3. Write maintainable, robust, and testable code.
+4. Perform code and test case review.
+5. Implement processes, solutions or tools to improve software delivery and quality.
+6. Able to adopt latest software development trends and industry best practices.
+Job Requirement
+1. Bachelor’s or Master’s degree in computer science or relevant fields.
+2. Software development experience in the finance, payment or banking industry is preferred.
+3. Excellent social, communication, presentation and leadership skills.
+4. Excellent knowledge in Java and one other programming language.
+5. Excellent knowledge of Relational Databases, SQL and ORM technologies.
+6. Strong foundation in frameworks such as Spring, jUnit, etc.
+7. Able to work in a fast paced and result driven environment.
+`;

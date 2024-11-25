@@ -3,12 +3,13 @@ import ArticleIcon from '@mui/icons-material/Article';
 import InsightsIcon from '@mui/icons-material/Insights';
 import InfoIcon from '@mui/icons-material/Info';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { extendTheme } from '@mui/material/styles';
 
 export const NAVIGATION = [
     {
         kind: 'header',
-        title: 'Main items',
+        title: 'Main',
     },
     {
         segment: 'dashboard',
@@ -31,6 +32,12 @@ export const NAVIGATION = [
     {
         kind: 'header',
         title: 'Info',
+    },
+    {
+        segment: 'profile',
+        title: 'Profile',
+        icon: <AccountCircleIcon />,
+        pattern: 'profile',
     },
     {
         segment: 'about',
