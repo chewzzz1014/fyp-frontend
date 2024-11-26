@@ -1,13 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Button, Dialog, DialogActions, DialogContent, Card, CardContent, Typography } from '@mui/material';
-import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { resume_text_1, job_desc } from '../_constants/resume';
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    Card,
+    CardContent,
+    Typography,
+} from "@mui/material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { resume_text_1, job_desc } from "../_constants/resume";
 
 // Define the statuses in an array
 const statuses = ["applied", "interviewing", "offer", "rejected"];
@@ -24,17 +32,17 @@ const initialData = [
 export default function Dashboard() {
     const router = useRouter();
     const [data, setData] = useState({
-        applied: initialData.filter(job => job.status === "applied"),
-        interviewing: initialData.filter(job => job.status === "interviewing"),
-        offer: initialData.filter(job => job.status === "offer"),
-        rejected: initialData.filter(job => job.status === "rejected"),
+        applied: initialData.filter((job) => job.status === "applied"),
+        interviewing: initialData.filter((job) => job.status === "interviewing"),
+        offer: initialData.filter((job) => job.status === "offer"),
+        rejected: initialData.filter((job) => job.status === "rejected"),
     });
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedJob, setSelectedJob] = useState(null);
 
     const handleExploreNowClick = () => {
-        router.push('/job-resume'); // Replace with your target page path
+        router.push("/job-resume"); // Replace with your target page path
     };
 
     const handleCardClick = (job) => {
@@ -75,7 +83,6 @@ export default function Dashboard() {
         });
     };
 
-
     // Function to get the color for each status
     const getColumnColor = (status) => {
         switch (status) {
@@ -107,8 +114,7 @@ export default function Dashboard() {
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="flex gap-4 justify-around text-black">
-                    {/* Iterate over the statuses array to create columns dynamically */}
-                    {statuses.map(status => (
+                    {statuses.map((status) => (
                         <Droppable key={status} droppableId={status}>
                             {(provided) => (
                                 <div
@@ -116,9 +122,10 @@ export default function Dashboard() {
                                     {...provided.droppableProps}
                                     className={`${getColumnColor(status)} p-4 rounded-lg w-1/4`}
                                 >
-                                    <h2 className="text-lg font-semibold">{status.charAt(0).toUpperCase() + status.slice(1)}</h2>
+                                    <h2 className="text-lg font-semibold">
+                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                    </h2>
                                     <div className="space-y-4 mt-4">
-                                        {/* Render the job cards for each status */}
                                         {data[status].map((job, index) => (
                                             <Draggable key={job.id} draggableId={job.id} index={index}>
                                                 {(provided) => (
@@ -126,10 +133,9 @@ export default function Dashboard() {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        className="bg-white p-4 rounded-lg shadow-md relative cursor-pointer"
-                                                        onClick={() => handleCardClick(job)} // Open the modal on click
+                                                        className="bg-white p-4 rounded-lg shadow-md relative"
                                                     >
-                                                        {/* Score displayed in the top-right corner */}
+                                                        {/* Job score */}
                                                         <div className="absolute top-2 right-2 font-bold px-2 py-1 rounded">
                                                             <span className="text-blue-500 text-lg sm:text-sm md:text-xl lg:text-2xl">
                                                                 {job.score}%
@@ -137,15 +143,29 @@ export default function Dashboard() {
                                                         </div>
 
                                                         {/* Job title */}
-                                                        <h3 className="font-bold text-lg mb-1 truncate">{job.position}</h3>
+                                                        <h3
+                                                            className="font-bold text-lg mb-1 truncate"
+                                                            onClick={() => handleCardClick(job)} // Modal still opens on card click
+                                                        >
+                                                            {job.position}
+                                                        </h3>
 
                                                         {/* Company name */}
                                                         <p className="text-sm text-gray-500 mb-2 truncate">{job.company}</p>
 
                                                         {/* Resume version */}
                                                         <p className="text-sm text-gray-600 truncate">
-                                                            Resume Version: <span className="font-semibold">Resume 1</span>
+                                                            Used <span className="font-semibold">Resume 1</span>
                                                         </p>
+
+                                                        {/* Add button with icon in the bottom-right corner */}
+                                                        <button
+                                                            onClick={() => handleCardClick(job)}
+                                                            className="absolute bottom-2 right-2 bg-gray-200 hover:bg-gray-300 p-1 rounded-full shadow-md"
+                                                            title="View Details"
+                                                        >
+                                                            <RocketLaunchIcon fontSize="small" />
+                                                        </button>
                                                     </div>
                                                 )}
                                             </Draggable>
@@ -162,46 +182,33 @@ export default function Dashboard() {
             {/* Modal for job details */}
             <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg" fullWidth>
                 <DialogContent className="flex gap-8">
-                    {/* Left: Resume Preview */}
                     <div className="w-1/2 border-r pr-8 overflow-auto">
                         <Card variant="outlined">
                             <CardContent>
                                 <Typography variant="subtitle1">
                                     <strong>Resume 1</strong>
                                 </Typography>
-                                {/* Render markdown content for resume */}
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {resume_text_1}
-                                </ReactMarkdown>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{resume_text_1}</ReactMarkdown>
                             </CardContent>
                         </Card>
                     </div>
-
-                    {/* Right: Job Details */}
                     <div className="w-1/2 overflow-auto">
                         <h3 className="font-bold text-2xl mb-4">{selectedJob?.position}</h3>
-
-                        {/* Row 1: Title and Link */}
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Job Link:</p>
-                            <a href={selectedJob?.link} target="_blank" className="text-blue-600">{selectedJob?.link}</a>
+                            <a href={selectedJob?.link} target="_blank" className="text-blue-600">
+                                {selectedJob?.link}
+                            </a>
                         </div>
-
-                        {/* Row 2: Company and Status */}
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Company:</p>
                             <p>{selectedJob?.company}</p>
                             <p className="text-lg font-semibold mt-2">Status:</p>
                             <p className="capitalize">{selectedJob?.status}</p>
                         </div>
-
-                        {/* Row 3: Job Description */}
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Job Description:</p>
-                            {/* Render markdown content for job description */}
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {selectedJob?.jobDesc}
-                            </ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedJob?.jobDesc}</ReactMarkdown>
                         </div>
                     </div>
                 </DialogContent>

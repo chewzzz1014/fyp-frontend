@@ -13,11 +13,16 @@ import {
     Card,
     CardContent,
     FormHelperText,
-    Grid
+    Grid,
 } from "@mui/material";
 import { resume_text_1, resume_text_2 } from "../_constants/resume";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useRouter } from "next/navigation";
 
 export default function JobResumePage() {
+    const router = useRouter();
+
     // Sample resumes
     const uploadedResumes = [
         { id: 1, name: "Resume 1", content: resume_text_1 },
@@ -61,21 +66,22 @@ export default function JobResumePage() {
     // Handle form submission
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        // Validate all fields
         const newErrors = {
             resume: !selectedResume,
-            title: !jobDetails.title,
-            company: !jobDetails.company,
-            link: !jobDetails.link,
+            title: !jobDetails.title.trim(),
+            company: !jobDetails.company.trim(),
+            link: !jobDetails.link.trim(),
             applicationStatus: !jobDetails.applicationStatus,
-            jobDesc: !jobDetails.jobDesc,
+            jobDesc: !jobDetails.jobDesc.trim(),
         };
 
         setErrors(newErrors);
 
-        // If no errors, submit the form
+        // Only navigate if there are no validation errors
         if (Object.values(newErrors).every((error) => !error)) {
-            console.log("Form submitted:", { selectedResume, jobDetails });
-            alert("Form submitted successfully!");
+            router.push("/job-resume/result");
         }
     };
 
@@ -89,7 +95,7 @@ export default function JobResumePage() {
                     <Typography variant="h5" gutterBottom>
                         Resume
                     </Typography>
-                    <FormControl fullWidth sx={{ mb: 2 }}>
+                    <FormControl fullWidth sx={{ mb: 2 }} error={errors.resume}>
                         <InputLabel>Select a Resume</InputLabel>
                         <Select
                             value={selectedResume ? selectedResume.id : ""}
@@ -102,7 +108,11 @@ export default function JobResumePage() {
                                 </MenuItem>
                             ))}
                         </Select>
-                        {errors.resume && <FormHelperText>Select a resume is required</FormHelperText>}
+                        {errors.resume && (
+                            <FormHelperText sx={{ color: "error.main" }}>
+                                Selecting a resume is required
+                            </FormHelperText>
+                        )}
                     </FormControl>
 
                     {selectedResume && (
@@ -111,7 +121,9 @@ export default function JobResumePage() {
                                 <Typography variant="subtitle1">
                                     <strong>Preview:</strong>
                                 </Typography>
-                                <Typography>{selectedResume.content}</Typography>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                    {selectedResume.content}
+                                </ReactMarkdown>
                             </CardContent>
                         </Card>
                     )}
@@ -124,7 +136,7 @@ export default function JobResumePage() {
                     </Typography>
                     {/* First Row: Job Title and Job Link */}
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6} sx={{ ml: 0 }}>
+                        <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Job Title"
                                 name="title"
@@ -178,7 +190,11 @@ export default function JobResumePage() {
                                     <MenuItem value="Rejected">Rejected</MenuItem>
                                     <MenuItem value="Accepted">Accepted</MenuItem>
                                 </Select>
-                                {errors.applicationStatus && <FormHelperText>Application status is required</FormHelperText>}
+                                {errors.applicationStatus && (
+                                    <FormHelperText sx={{ color: "error.main" }}>
+                                        Application status is required
+                                    </FormHelperText>
+                                )}
                             </FormControl>
                         </Grid>
                     </Grid>
@@ -211,4 +227,3 @@ export default function JobResumePage() {
         </div>
     );
 }
-

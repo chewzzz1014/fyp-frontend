@@ -14,25 +14,35 @@ import {
     CardContent,
     FormHelperText,
     Grid,
-    IconButton
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    CircularProgress,
 } from "@mui/material";
-import { resume_text_1, resume_text_2 } from "../_constants/resume";
 import AddIcon from "@mui/icons-material/Add";
-import { useRouter } from 'next/navigation';
+import { resume_text_1, resume_text_2 } from "../_constants/resume";
 
 export default function ResumePage() {
     // Sample resumes
-    const uploadedResumes = [
+    const [uploadedResumes, setUploadedResumes] = useState([
         { id: 1, name: "Resume 1", content: resume_text_1 },
         { id: 2, name: "Resume 2", content: resume_text_2 },
-    ];
+    ]);
 
-    // State for resume selection, preview, and file upload
+    // State for resume selection and preview
     const [selectedResume, setSelectedResume] = useState(null);
+
+    // File upload states
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
 
-    const router = useRouter();
+    // Dialog states
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccessOpen, setIsSuccessOpen] = useState(false);
+    const [resumeName, setResumeName] = useState("");
 
     // Handle resume selection
     const handleResumeChange = (event) => {
@@ -46,31 +56,44 @@ export default function ResumePage() {
     const handleFileUpload = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile && uploadedFile.type === "application/pdf") {
-            // Mock file processing and add to resumes
-            const newResume = {
-                id: uploadedResumes.length + 1,
-                name: uploadedFile.name,
-                content: "Content extracted from uploaded resume (mock content)", // Replace with actual PDF parsing logic
-            };
-            uploadedResumes.push(newResume);
-            setFile(uploadedFile);
             setError("");
-            setSelectedResume(newResume);
-            // router.refresh(); // Refresh the page to reflect the newly uploaded resume in selection
+            setFile(uploadedFile);
+            setResumeName(uploadedFile.name.replace(/\.pdf$/, ""));
+            setIsDialogOpen(true); // Open dialog to name the resume
         } else {
             setError("Please upload a valid PDF file.");
         }
+    };
+
+    // Handle dialog submission
+    const handleDialogSubmit = () => {
+        setIsDialogOpen(false);
+        setIsLoading(true);
+
+        // Simulate parsing and saving to the database
+        setTimeout(() => {
+            const newResume = {
+                id: uploadedResumes.length + 1,
+                name: resumeName,
+                content: "Extracted content from uploaded resume (mock content)", // Replace with actual parsing logic
+            };
+            setUploadedResumes([...uploadedResumes, newResume]);
+            setSelectedResume(newResume);
+            setIsLoading(false);
+            setIsSuccessOpen(true);
+        }, 2000); // Simulating a 2-second delay
     };
 
     return (
         <div className="min-h-screen p-8">
             <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
 
+            {/* Resume Selection Section */}
             <Box mb={4} sx={{ mx: 4 }}>
                 <Typography variant="h5" gutterBottom>
                     Resume
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                     <FormControl fullWidth sx={{ mr: 2 }}>
                         <InputLabel>Select a Resume</InputLabel>
                         <Select
@@ -79,7 +102,15 @@ export default function ResumePage() {
                             label="Select a Resume"
                         >
                             {uploadedResumes.map((resume) => (
-                                <MenuItem key={resume.id} value={resume.id} selected={selectedResume ? selectedResume.id === resume.id : false}>
+                                <MenuItem
+                                    key={resume.id}
+                                    value={resume.id}
+                                    selected={
+                                        selectedResume
+                                            ? selectedResume.id === resume.id
+                                            : false
+                                    }
+                                >
                                     {resume.name}
                                 </MenuItem>
                             ))}
@@ -87,8 +118,13 @@ export default function ResumePage() {
                     </FormControl>
                     <IconButton
                         color="primary"
-                        onClick={() => document.getElementById("file-input").click()}
-                        sx={{ backgroundColor: "#1565c0", ":hover": { backgroundColor: "#049DD9" } }}
+                        onClick={() =>
+                            document.getElementById("file-input").click()
+                        }
+                        sx={{
+                            backgroundColor: "#1565c0",
+                            ":hover": { backgroundColor: "#049DD9" },
+                        }}
                     >
                         <AddIcon sx={{ color: "#ffffff" }} />
                     </IconButton>
@@ -103,6 +139,7 @@ export default function ResumePage() {
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Box>
 
+            {/* Selected Resume Content Preview */}
             {selectedResume && (
                 <Box mb={4} sx={{ mx: 4 }}>
                     <Typography variant="h5" gutterBottom>
@@ -115,6 +152,89 @@ export default function ResumePage() {
                     </Card>
                 </Box>
             )}
+
+            {/* Name Resume Dialog */}
+            <Dialog
+                open={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
+                fullWidth
+                sx={{
+                    "& .MuiDialog-paper": {
+                        maxWidth: "800px", // Custom width
+                        padding: "20px",
+                    },
+                }}
+            >
+                <DialogTitle>Name Your Resume</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Resume Name"
+                        fullWidth
+                        value={resumeName}
+                        onChange={(e) => setResumeName(e.target.value)}
+                        error={!resumeName.trim() || uploadedResumes.some(r => r.name === resumeName.trim())}
+                        helperText={
+                            !resumeName.trim()
+                                ? "Resume name is required"
+                                : uploadedResumes.some(r => r.name === resumeName.trim())
+                                    ? "Resume name must be unique"
+                                    : ""
+                        }
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleDialogSubmit}
+                        disabled={
+                            !resumeName.trim() || uploadedResumes.some(r => r.name === resumeName.trim())
+                        }
+                        color="primary"
+                    >
+                        Submit
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Loading Animation */}
+            {isLoading && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        zIndex: 1200,
+                    }}
+                >
+                    <CircularProgress />
+                </Box>
+            )}
+
+            {/* Success Popup */}
+            <Dialog
+                open={isSuccessOpen}
+                onClose={() => setIsSuccessOpen(false)}
+            >
+                <DialogTitle>Success</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Your resume has been uploaded successfully!
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setIsSuccessOpen(false)}>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 }
