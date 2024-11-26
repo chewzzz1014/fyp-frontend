@@ -28,7 +28,7 @@ export default function AboutPage() {
                 This allows us to identify specific parts of your resume such as your name, contact information, educational qualifications, work history, and skills.
             </p>
             <p className="mb-4 text-lg text-justify">
-                <strong>3. Job-Resume Matching:</strong> By extracting the skills from both the resume and a given job description, we compare the two to determine how well your qualifications align with the job's requirements.
+                <strong>3. Job-Resume Matching:</strong> By extracting the skills from both the resume and a given job description, we compare the two to determine how well your qualifications align with the job&apos;s requirements.
             </p>
 
             {/* NER Table Section */}

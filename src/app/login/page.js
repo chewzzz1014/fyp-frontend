@@ -78,7 +78,7 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-4 text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button
             onClick={handleSignupRedirect}
             className="text-blue-500 underline"
