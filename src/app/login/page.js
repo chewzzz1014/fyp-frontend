@@ -1,21 +1,32 @@
-"use client"
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
+  const validateEmail = (email) => {
+    // Basic email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
     // Simulate account check (replace with real logic as needed)
-    if (username === 'user' && password === 'password') {
+    if (email === 'user@example.com' && password === 'password') {
       // Redirect to a dashboard or main page if login is successful
-      alert('Logged in successfully');
+      router.push("/dashboard");
     } else {
       setErrorMessage('Invalid credentials');
     }
@@ -33,15 +44,15 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xs sm:max-w-sm">
           <div className="flex flex-col">
-            <label htmlFor="username" className="text-sm font-medium">Username</label>
+            <label htmlFor="email" className="text-sm font-medium">Email</label>
             <input
-              type="text"
-              id="username"
-              name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="border border-gray-300 p-2 rounded-md text-black"
-              placeholder="Enter your username"
+              placeholder="Enter your email"
             />
           </div>
           <div className="flex flex-col">

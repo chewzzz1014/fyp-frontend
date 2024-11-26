@@ -94,33 +94,40 @@ export default function ResumePage() {
                     Resume
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <FormControl fullWidth sx={{ mr: 2 }}>
-                        <InputLabel>Select a Resume</InputLabel>
-                        <Select
-                            value={selectedResume ? selectedResume.id : ""}
-                            onChange={handleResumeChange}
-                            label="Select a Resume"
-                        >
-                            {uploadedResumes.map((resume) => (
-                                <MenuItem
-                                    key={resume.id}
-                                    value={resume.id}
-                                    selected={
-                                        selectedResume
-                                            ? selectedResume.id === resume.id
-                                            : false
-                                    }
-                                >
-                                    {resume.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {/* Conditionally render Select or TextField based on if resumes are uploaded */}
+                    {uploadedResumes.length > 0 ? (
+                        <FormControl fullWidth sx={{ mr: 2 }}>
+                            <InputLabel>Select a Resume</InputLabel>
+                            <Select
+                                value={selectedResume ? selectedResume.id : ""}
+                                onChange={handleResumeChange}
+                                label="Select a Resume"
+                            >
+                                {uploadedResumes.map((resume) => (
+                                    <MenuItem
+                                        key={resume.id}
+                                        value={resume.id}
+                                        selected={selectedResume ? selectedResume.id === resume.id : false}
+                                    >
+                                        {resume.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    ) : (
+                        <TextField
+                            label="No resume available. Add yours now!"
+                            variant="outlined"
+                            disabled
+                            fullWidth
+                            sx={{ mr: 2 }}
+                        />
+                    )}
+
+                    {/* Button to upload a new resume */}
                     <IconButton
                         color="primary"
-                        onClick={() =>
-                            document.getElementById("file-input").click()
-                        }
+                        onClick={() => document.getElementById("file-input").click()}
                         sx={{
                             backgroundColor: "#1565c0",
                             ":hover": { backgroundColor: "#049DD9" },
@@ -223,7 +230,7 @@ export default function ResumePage() {
                 open={isSuccessOpen}
                 onClose={() => setIsSuccessOpen(false)}
             >
-                <DialogTitle>Success</DialogTitle>
+                <DialogTitle>Resume Uploaded Successfully</DialogTitle>
                 <DialogContent>
                     <Typography>
                         Your resume has been uploaded successfully!

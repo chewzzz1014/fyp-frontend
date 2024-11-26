@@ -11,6 +11,10 @@ import {
     Chip,
     Divider,
     Paper,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 
@@ -23,11 +27,12 @@ export default function JobResumeMatchingPage() {
     The candidate should be proficient in JavaScript, React, and have experience with REST APIs. 
     Prior knowledge of Python and DevOps practices is a plus.`;
 
-    const resumeSkills = ["JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps", "JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps"];
-    const jobSkills = ["JavaScript", "React", "REST APIs", "Python", "DevOps", "JavaScript", "React", "REST APIs", "Python", "DevOps"];
+    const resumeSkills = ["JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps"];
+    const jobSkills = ["JavaScript", "React", "REST APIs", "Python", "DevOps"];
 
     // Placeholder for job-resume matching score
     const [matchingScore, setMatchingScore] = useState(0.00);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const router = useRouter();
 
     // Simulate a job-resume matching function
@@ -39,6 +44,13 @@ export default function JobResumeMatchingPage() {
 
     // Handle "Done" button click
     const handleDoneClick = () => {
+        // Trigger the success popup dialog
+        setIsDialogOpen(true);
+    };
+
+    // Handle dialog close
+    const handleDialogClose = () => {
+        setIsDialogOpen(false);
         router.push("/dashboard"); // Redirect to dashboard
     };
 
@@ -47,7 +59,7 @@ export default function JobResumeMatchingPage() {
             <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
 
             {/* Skills and Matching Score Section */}
-            <Paper elevation={3} sx={{ p: 3, mb: 4, mx:4 }}>
+            <Paper elevation={3} sx={{ p: 3, mb: 4, mx: 4 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={6}>
                         <Typography variant="h6" gutterBottom>
@@ -83,7 +95,7 @@ export default function JobResumeMatchingPage() {
             </Paper>
 
             {/* Resume and Job Description Section */}
-            <Grid container spacing={4} sx={{ mx:4 }}>
+            <Grid container spacing={4} sx={{ mx: 4 }}>
                 {/* Resume Section */}
                 <Grid item xs={12} md={6}>
                     <Card variant="outlined">
@@ -119,6 +131,25 @@ export default function JobResumeMatchingPage() {
                     Done
                 </Button>
             </Box>
+
+            {/* Success Popup Dialog */}
+            <Dialog
+                open={isDialogOpen}
+                onClose={handleDialogClose}
+                fullWidth
+            >
+                <DialogTitle>Result Saved Successfully</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Job-resume matching result has been saved. You can now view it in the dashboard!
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleDialogClose} color="primary">
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

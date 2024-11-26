@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -9,19 +10,44 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false); // Dialog open state
   const router = useRouter();
+
+  const validateEmail = (email) => {
+    // Basic email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Clear previous error messages
+    setErrorMessage('');
+
+    // Check if all fields are filled
+    if (!username || !email || !password || !confirmPassword) {
+      setErrorMessage('All fields are mandatory');
+      return;
+    }
+
+    // Validate email format
+    if (!validateEmail(email)) {
+      setErrorMessage('Please enter a valid email address');
+      return;
+    }
+
+    // Check if passwords match
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       return;
     }
 
     // Simulate signup logic (replace with actual API call)
-    alert('Account created successfully');
-    router.push('/login'); // Redirect to login page after signup
+    setIsSuccessOpen(true); // Open success dialog after successful signup
+    setTimeout(() => {
+      router.push('/resume'); // Redirect to /resume after 3 seconds
+    }, 3000);
   };
 
   return (
@@ -42,6 +68,7 @@ export default function SignUpPage() {
               placeholder="Enter your username"
             />
           </div>
+
           <div className="flex flex-col">
             <label htmlFor="email" className="text-sm font-medium">Email</label>
             <input
@@ -54,6 +81,7 @@ export default function SignUpPage() {
               placeholder="Enter your email"
             />
           </div>
+
           <div className="flex flex-col">
             <label htmlFor="password" className="text-sm font-medium">Password</label>
             <input
@@ -66,6 +94,7 @@ export default function SignUpPage() {
               placeholder="Enter your password"
             />
           </div>
+
           <div className="flex flex-col">
             <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</label>
             <input
@@ -98,6 +127,24 @@ export default function SignUpPage() {
           </button>
         </p>
       </main>
+
+      {/* Success Dialog */}
+      <Dialog
+        open={isSuccessOpen}
+        onClose={() => setIsSuccessOpen(false)}
+      >
+        <DialogTitle>Account Created Successfully</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Your account has been created. Start by adding your resume!
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsSuccessOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
