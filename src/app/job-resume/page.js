@@ -23,6 +23,8 @@ import { useRouter } from "next/navigation";
 export default function JobResumePage() {
     const router = useRouter();
 
+    const statuses = ["Wished", "Applied", "Interviewing", "Offer", "Rejected"];
+
     // Sample resumes
     const uploadedResumes = [
         { id: 1, name: "Resume 1", content: resume_text_1 },
@@ -37,7 +39,7 @@ export default function JobResumePage() {
         title: "",
         company: "",
         link: "",
-        applicationStatus: "",
+        applicationStatus: "Wished",
         jobDesc: "",
     });
 
@@ -185,10 +187,11 @@ export default function JobResumePage() {
                                     onChange={handleInputChange}
                                     label="Application Status"
                                 >
-                                    <MenuItem value="Applied">Applied</MenuItem>
-                                    <MenuItem value="In Progress">In Progress</MenuItem>
-                                    <MenuItem value="Rejected">Rejected</MenuItem>
-                                    <MenuItem value="Accepted">Accepted</MenuItem>
+                                    {statuses.map((value, idx) => (
+                                        <MenuItem key={idx} value={value}>
+                                            {value}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                                 {errors.applicationStatus && (
                                     <FormHelperText sx={{ color: "error.main" }}>
@@ -196,6 +199,7 @@ export default function JobResumePage() {
                                     </FormHelperText>
                                 )}
                             </FormControl>
+
                         </Grid>
                     </Grid>
 

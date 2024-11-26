@@ -17,8 +17,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { resume_text_1, job_desc } from "../_constants/resume";
 
-// Define the statuses in an array
-const statuses = ["applied", "interviewing", "offer", "rejected"];
+// Define the statuses in an array, including "wished"
+const statuses = ["wished", "applied", "interviewing", "offer", "rejected"];
 
 // Initial job application data
 const initialData = [
@@ -27,11 +27,17 @@ const initialData = [
     { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing", jobDesc: job_desc },
     { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer", jobDesc: job_desc },
     { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected", jobDesc: job_desc },
+    { id: "6", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
+    { id: "7", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
+    { id: "8", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
+    { id: "9", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
+    { id: "10", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
 ];
 
 export default function Dashboard() {
     const router = useRouter();
     const [data, setData] = useState({
+        wished: initialData.filter((job) => job.status === "wished"),
         applied: initialData.filter((job) => job.status === "applied"),
         interviewing: initialData.filter((job) => job.status === "interviewing"),
         offer: initialData.filter((job) => job.status === "offer"),
@@ -94,6 +100,8 @@ export default function Dashboard() {
                 return "bg-green-100";
             case "rejected":
                 return "bg-red-100";
+            case "wished":
+                return "bg-purple-100"; // Purple for the "Wished" section
             default:
                 return "bg-gray-100";
         }
@@ -113,14 +121,75 @@ export default function Dashboard() {
                 </Button>
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex gap-4 justify-around text-black">
-                    {statuses.map((status) => (
+                {/* Wished Section: Placed on top with 4-column layout and background color */}
+                <div className="mb-8">
+                    <Droppable key="wished" droppableId="wished" direction="horizontal">
+                        {(provided) => (
+                            <div
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                                className="bg-purple-100 p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+                            >
+                                <h2 className="col-span-4 text-lg font-semibold">Wished</h2>
+                                {data.wished.map((job, index) => (
+                                    <Draggable key={job.id} draggableId={job.id} index={index}>
+                                        {(provided) => (
+                                            <div
+                                                ref={provided.innerRef}
+                                                {...provided.draggableProps}
+                                                {...provided.dragHandleProps}
+                                                className="bg-white p-4 rounded-lg shadow-md relative"
+                                            >
+                                                {/* Job score */}
+                                                <div className="absolute top-2 right-2 font-bold px-2 py-1 rounded">
+                                                    <span className="text-blue-500 text-lg sm:text-xs md:text-sm lg:text-xl">
+                                                        {job.score}%
+                                                    </span>
+                                                </div>
+
+                                                {/* Job title */}
+                                                <h3
+                                                    className="font-bold text-lg mb-1 truncate"
+                                                    onClick={() => handleCardClick(job)} // Modal still opens on card click
+                                                >
+                                                    {job.position}
+                                                </h3>
+
+                                                {/* Company name */}
+                                                <p className="text-sm text-gray-500 mb-2 truncate">{job.company}</p>
+
+                                                {/* Resume version */}
+                                                <p className="text-sm text-gray-600 truncate">
+                                                    Used <span className="font-semibold">Resume 1</span>
+                                                </p>
+
+                                                {/* Add button with icon in the bottom-right corner */}
+                                                <button
+                                                    onClick={() => handleCardClick(job)}
+                                                    className="absolute bottom-2 right-2 bg-gray-200 hover:bg-gray-300 p-1 rounded-full shadow-md"
+                                                    title="View Details"
+                                                >
+                                                    <RocketLaunchIcon fontSize="small" />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+                </div>
+
+                {/* Other Sections: Applied, Interviewing, Offer, Rejected */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {statuses.slice(1).map((status) => (
                         <Droppable key={status} droppableId={status}>
                             {(provided) => (
                                 <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className={`${getColumnColor(status)} p-4 rounded-lg w-1/4`}
+                                    className={`${getColumnColor(status)} p-4 rounded-lg w-full`}
                                 >
                                     <h2 className="text-lg font-semibold">
                                         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -137,7 +206,7 @@ export default function Dashboard() {
                                                     >
                                                         {/* Job score */}
                                                         <div className="absolute top-2 right-2 font-bold px-2 py-1 rounded">
-                                                            <span className="text-blue-500 text-lg sm:text-sm md:text-xl lg:text-2xl">
+                                                            <span className="text-blue-500 text-lg sm:text-xs md:text-sm lg:text-xl">
                                                                 {job.score}%
                                                             </span>
                                                         </div>
@@ -145,7 +214,7 @@ export default function Dashboard() {
                                                         {/* Job title */}
                                                         <h3
                                                             className="font-bold text-lg mb-1 truncate"
-                                                            onClick={() => handleCardClick(job)} // Modal still opens on card click
+                                                            onClick={() => handleCardClick(job)}
                                                         >
                                                             {job.position}
                                                         </h3>

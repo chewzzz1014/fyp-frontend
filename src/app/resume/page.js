@@ -233,7 +233,7 @@ export default function ResumePage() {
                 <DialogTitle>Resume Uploaded Successfully</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Your resume has been uploaded successfully!
+                        Explore what entities are found in your resume!
                     </Typography>
                 </DialogContent>
                 <DialogActions>
