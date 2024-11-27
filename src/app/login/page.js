@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { login } from '../_services/api';  // Import the login API function
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,30 +11,48 @@ export default function LoginPage() {
   const router = useRouter();
 
   const validateEmail = (email) => {
-    // Basic email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (data) => {
+    try {
+      const response = await login(data); 
+      console.log(response);
+
+      router.push("/dashboard")
+    } catch (error) {
+      console.log(error)
+      if (error && error.data && error.data.detail) {
+        setErrorMessage(error.data.detail);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again later.");
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setErrorMessage('');
 
     if (!validateEmail(email)) {
       setErrorMessage('Please enter a valid email address.');
       return;
     }
 
-    // Simulate account check (replace with real logic as needed)
-    if (email === 'user@example.com' && password === 'password') {
-      // Redirect to a dashboard or main page if login is successful
-      router.push("/dashboard");
-    } else {
-      setErrorMessage('Invalid credentials');
+    if (!password) {
+      setErrorMessage('Password is required.');
+      return;
     }
+
+    handleLogin({
+      email,
+      password
+    });
   };
 
   const handleSignupRedirect = () => {
-    // Redirect to signup page if the user doesn't have an account
     router.push('/signup');
   };
 

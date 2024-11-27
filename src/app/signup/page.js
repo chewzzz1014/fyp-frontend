@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import { signup } from '../_services/api';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -13,6 +14,25 @@ export default function SignUpPage() {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false); // Dialog open state
   const router = useRouter();
 
+  const handleSignup = async (data) => {
+    try {
+      const response = await signup(data);  // Calling the API signup function
+      console.log(response);
+
+      setIsSuccessOpen(true);
+      setTimeout(() => {
+        router.push('/resume');
+      }, 3000);
+    } catch (error) {
+      console.log(error)
+      if (error && error.data && error.data.detail) {
+        setErrorMessage(error.data.detail);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again later.");
+      }
+    }
+  };
+
   const validateEmail = (email) => {
     // Basic email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -22,32 +42,29 @@ export default function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Clear previous error messages
-    setErrorMessage('');
+    setErrorMessage('');  // Reset previous error messages
 
-    // Check if all fields are filled
     if (!username || !email || !password || !confirmPassword) {
       setErrorMessage('All fields are mandatory');
       return;
     }
 
-    // Validate email format
     if (!validateEmail(email)) {
       setErrorMessage('Please enter a valid email address');
       return;
     }
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match');
       return;
     }
 
-    // Simulate signup logic (replace with actual API call)
-    setIsSuccessOpen(true); // Open success dialog after successful signup
-    setTimeout(() => {
-      router.push('/resume'); // Redirect to /resume after 3 seconds
-    }, 3000);
+    // Proceed with signup if validations pass
+    handleSignup({
+      username,
+      email,
+      password
+    });
   };
 
   return (
