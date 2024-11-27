@@ -50,6 +50,9 @@ export const NAVIGATION = [
         title: 'Logout',
         icon: <LogoutIcon />,
         pattern: 'logout',
+        method: () => {
+            alert('Logging out...');
+        },
     },
 ];
 

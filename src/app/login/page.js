@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '../_services/api';  // Import the login API function
+import { login } from '../_services/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,16 +17,15 @@ export default function LoginPage() {
 
   const handleLogin = async (data) => {
     try {
-      const response = await login(data); 
+      const response = await login(data);
       console.log(response);
-
-      router.push("/dashboard")
+      localStorage.setItem('access_token', response.access_token);
+      router.push('/resume');
     } catch (error) {
-      console.log(error)
-      if (error && error.data && error.data.detail) {
-        setErrorMessage(error.data.detail);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrorMessage(error.response.data.detail); // Show backend error message
       } else {
-        setErrorMessage("An unexpected error occurred. Please try again later.");
+        setErrorMessage('An unexpected error occurred. Please try again later.');
       }
     }
   };
@@ -46,10 +45,7 @@ export default function LoginPage() {
       return;
     }
 
-    handleLogin({
-      email,
-      password
-    });
+    handleLogin({ email, password });
   };
 
   const handleSignupRedirect = () => {

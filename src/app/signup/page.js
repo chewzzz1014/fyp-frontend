@@ -11,22 +11,21 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [isSuccessOpen, setIsSuccessOpen] = useState(false); // Dialog open state
+  const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const router = useRouter();
 
   const handleSignup = async (data) => {
     try {
-      const response = await signup(data);  // Calling the API signup function
-      console.log(response);
-
+      const response = await signup(data);
+      localStorage.setItem('access_token', response.access_token);
+      localStorage.setItem('refresh_token', response.refresh_token);
       setIsSuccessOpen(true);
       setTimeout(() => {
         router.push('/resume');
       }, 3000);
     } catch (error) {
-      console.log(error)
-      if (error && error.data && error.data.detail) {
-        setErrorMessage(error.data.detail);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrorMessage(error.response.data.detail); // Show backend error
       } else {
         setErrorMessage("An unexpected error occurred. Please try again later.");
       }
@@ -34,7 +33,6 @@ export default function SignUpPage() {
   };
 
   const validateEmail = (email) => {
-    // Basic email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
@@ -42,7 +40,7 @@ export default function SignUpPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setErrorMessage('');  // Reset previous error messages
+    setErrorMessage('');
 
     if (!username || !email || !password || !confirmPassword) {
       setErrorMessage('All fields are mandatory');
@@ -59,12 +57,7 @@ export default function SignUpPage() {
       return;
     }
 
-    // Proceed with signup if validations pass
-    handleSignup({
-      username,
-      email,
-      password
-    });
+    handleSignup({ username, email, password });
   };
 
   return (
@@ -145,16 +138,10 @@ export default function SignUpPage() {
         </p>
       </main>
 
-      {/* Success Dialog */}
-      <Dialog
-        open={isSuccessOpen}
-        onClose={() => setIsSuccessOpen(false)}
-      >
+      <Dialog open={isSuccessOpen} onClose={() => setIsSuccessOpen(false)}>
         <DialogTitle>Account Created Successfully</DialogTitle>
         <DialogContent>
-          <Typography>
-            Your account has been created. Start by adding your resume!
-          </Typography>
+          <Typography>Your account has been created. Start by adding your resume!</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsSuccessOpen(false)} color="primary">
