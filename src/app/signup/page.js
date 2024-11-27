@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
-import { signup } from '../_services/api';
+import { signup } from '../_services/auth';
 import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
 

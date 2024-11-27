@@ -20,31 +20,27 @@ import {
     DialogContent,
     DialogActions,
     CircularProgress,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { resume_text_1, resume_text_2 } from "../_constants/resume";
+import { uploadResume } from "../_services/resume";
 
 export default function ResumePage() {
-    // Sample resumes
     const [uploadedResumes, setUploadedResumes] = useState([
         { id: 1, name: "Resume 1", content: resume_text_1 },
         { id: 2, name: "Resume 2", content: resume_text_2 },
     ]);
 
-    // State for resume selection and preview
     const [selectedResume, setSelectedResume] = useState(null);
-
-    // File upload states
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
-
-    // Dialog states
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccessOpen, setIsSuccessOpen] = useState(false);
     const [resumeName, setResumeName] = useState("");
 
-    // Handle resume selection
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
         const resume = uploadedResumes.find((r) => r.id === resumeId);
@@ -52,36 +48,50 @@ export default function ResumePage() {
         setSelectedResume(resume);
     };
 
-    // Handle file upload
     const handleFileUpload = (event) => {
         const uploadedFile = event.target.files[0];
         if (uploadedFile && uploadedFile.type === "application/pdf") {
             setError("");
             setFile(uploadedFile);
             setResumeName(uploadedFile.name.replace(/\.pdf$/, ""));
-            setIsDialogOpen(true); // Open dialog to name the resume
+            setIsDialogOpen(true);
         } else {
             setError("Please upload a valid PDF file.");
         }
     };
 
-    // Handle dialog submission
-    const handleDialogSubmit = () => {
+    const handleDialogSubmit = async () => {
         setIsDialogOpen(false);
         setIsLoading(true);
 
-        // Simulate parsing and saving to the database
-        setTimeout(() => {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("resume_name", resumeName);
+
+        try {
+            const data = await uploadResume(formData);
             const newResume = {
                 id: uploadedResumes.length + 1,
                 name: resumeName,
-                content: "Extracted content from uploaded resume (mock content)", // Replace with actual parsing logic
+                content: data.resume_text,
             };
             setUploadedResumes([...uploadedResumes, newResume]);
             setSelectedResume(newResume);
-            setIsLoading(false);
             setIsSuccessOpen(true);
-        }, 2000); // Simulating a 2-second delay
+        } catch (error) {
+            setError(error.message); // Display error message
+        } finally {
+            setIsLoading(false);
+            setFile(null); // Reset file state
+            setResumeName(""); // Reset resume name state
+        }
+    };
+
+    const handleFileReset = () => {
+        setError(""); // Clear any previous errors
+        setFile(null); // Reset file input
+        setResumeName(""); // Clear the resume name field
+        setIsDialogOpen(false); // Close the dialog box
     };
 
     return (
@@ -94,7 +104,6 @@ export default function ResumePage() {
                     Resume
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {/* Conditionally render Select or TextField based on if resumes are uploaded */}
                     {uploadedResumes.length > 0 ? (
                         <FormControl fullWidth sx={{ mr: 2 }}>
                             <InputLabel>Select a Resume</InputLabel>
@@ -104,11 +113,7 @@ export default function ResumePage() {
                                 label="Select a Resume"
                             >
                                 {uploadedResumes.map((resume) => (
-                                    <MenuItem
-                                        key={resume.id}
-                                        value={resume.id}
-                                        selected={selectedResume ? selectedResume.id === resume.id : false}
-                                    >
+                                    <MenuItem key={resume.id} value={resume.id}>
                                         {resume.name}
                                     </MenuItem>
                                 ))}
@@ -124,7 +129,6 @@ export default function ResumePage() {
                         />
                     )}
 
-                    {/* Button to upload a new resume */}
                     <IconButton
                         color="primary"
                         onClick={() => document.getElementById("file-input").click()}
@@ -161,17 +165,7 @@ export default function ResumePage() {
             )}
 
             {/* Name Resume Dialog */}
-            <Dialog
-                open={isDialogOpen}
-                onClose={() => setIsDialogOpen(false)}
-                fullWidth
-                sx={{
-                    "& .MuiDialog-paper": {
-                        maxWidth: "800px", // Custom width
-                        padding: "20px",
-                    },
-                }}
-            >
+            <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth>
                 <DialogTitle>Name Your Resume</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -181,23 +175,15 @@ export default function ResumePage() {
                         fullWidth
                         value={resumeName}
                         onChange={(e) => setResumeName(e.target.value)}
-                        error={!resumeName.trim() || uploadedResumes.some(r => r.name === resumeName.trim())}
-                        helperText={
-                            !resumeName.trim()
-                                ? "Resume name is required"
-                                : uploadedResumes.some(r => r.name === resumeName.trim())
-                                    ? "Resume name must be unique"
-                                    : ""
-                        }
+                        error={!resumeName.trim()}
+                        helperText={!resumeName.trim() && "Resume name is required"}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleFileReset}>Cancel</Button>
                     <Button
                         onClick={handleDialogSubmit}
-                        disabled={
-                            !resumeName.trim() || uploadedResumes.some(r => r.name === resumeName.trim())
-                        }
+                        disabled={!resumeName.trim()}
                         color="primary"
                     >
                         Submit
@@ -226,22 +212,22 @@ export default function ResumePage() {
             )}
 
             {/* Success Popup */}
-            <Dialog
-                open={isSuccessOpen}
-                onClose={() => setIsSuccessOpen(false)}
-            >
+            <Dialog open={isSuccessOpen} onClose={() => setIsSuccessOpen(false)}>
                 <DialogTitle>Resume Uploaded Successfully</DialogTitle>
                 <DialogContent>
-                    <Typography>
-                        Explore what entities are found in your resume!
-                    </Typography>
+                    <Typography>Explore what entities are found in your resume!</Typography>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setIsSuccessOpen(false)}>
-                        Close
-                    </Button>
+                    <Button onClick={() => setIsSuccessOpen(false)}>Close</Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Snackbar for Errors */}
+            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
+                <Alert onClose={() => setError("")} severity="error" sx={{ width: "100%" }}>
+                    {error}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }

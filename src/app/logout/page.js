@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { logout } from "../_services/api";
+import { logout } from "../_services/auth";
 
 export default function LogoutPage() {
     const router = useRouter();
