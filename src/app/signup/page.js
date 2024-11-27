@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import { signup } from '../_services/api';
@@ -8,17 +8,22 @@ import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const token = getAccessToken();
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
-  const router = useRouter();
 
-  if (isTokenValid(token)) {
-    router.back();
-  }
+  // redirect if user is already logged in
+  useEffect(() => {
+    if (isTokenValid(token)) {
+      router.back();
+    }
+  }, [token, router]);
 
   const handleSignup = async (data) => {
     try {

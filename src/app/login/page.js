@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '../_services/api';
 import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
 
 export default function LoginPage() {
+  const router = useRouter();
   const token = getAccessToken();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const router = useRouter();
 
-  if (isTokenValid(token)) {
-    router.back();
-  }
+  // redirect if user is already logged in
+  useEffect(() => {
+    if (isTokenValid(token)) {
+      router.back();
+    }
+  }, [token, router]);
 
   const handleLogin = async (data) => {
     try {
@@ -42,7 +45,7 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setErrorMessage('');
+    setErrorMessage(''); // Reset error message
 
     // Validate input fields
     if (!validateEmail(email)) {

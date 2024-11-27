@@ -4,6 +4,7 @@ import 'rsuite/dist/rsuite-no-reset.min.css';
 import './globals.css';
 
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, theme } from './_constants/nav-bar';
@@ -13,8 +14,15 @@ import { isTokenValid, getAccessToken } from './_utils/auth';
 export default function RootLayout({ children }) {
   const token = getAccessToken();
   const currentPathName = usePathname();
+  const router = useRouter();
   const noDashboardRoutes = ['/login', '/signup'];
   const isNoDashboardPage = noDashboardRoutes.includes(currentPathName);
+
+  useEffect(() => {
+    if (!isTokenValid(token) && !isNoDashboardPage) {
+      router.push('/login'); // Immediate redirection to login
+    }
+  }, [token, isNoDashboardPage, router]);
 
   return (
     <html lang="en">
