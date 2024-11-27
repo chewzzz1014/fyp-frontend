@@ -23,7 +23,7 @@ import { useRouter } from "next/navigation";
 export default function JobResumePage() {
     const router = useRouter();
 
-    const statuses = ["Wished", "Applied", "Interviewing", "Offer", "Rejected"];
+    const statuses = ["Interested", "Applied", "Assessment", "Interviewing", "Offer", "Rejected"];
 
     // Sample resumes
     const uploadedResumes = [
@@ -39,7 +39,7 @@ export default function JobResumePage() {
         title: "",
         company: "",
         link: "",
-        applicationStatus: "Wished",
+        applicationStatus: "Interested",
         jobDesc: "",
     });
 

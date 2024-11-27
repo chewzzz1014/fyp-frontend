@@ -17,8 +17,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { resume_text_1, job_desc } from "../_constants/resume";
 
-// Define the statuses in an array, including "wished"
-const statuses = ["wished", "applied", "interviewing", "offer", "rejected"];
+// Define the statuses in an array, including "interested"
+const statuses = ["interested", "applied", "assessment", "interviewing", "offer", "rejected"];
 
 // Initial job application data
 const initialData = [
@@ -27,21 +27,22 @@ const initialData = [
     { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing", jobDesc: job_desc },
     { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer", jobDesc: job_desc },
     { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected", jobDesc: job_desc },
-    { id: "6", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
-    { id: "7", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
-    { id: "8", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
-    { id: "9", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
-    { id: "10", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "wished", jobDesc: job_desc },
+    { id: "6", position: "Product Manager", company: "Company F", link: "https://company-f.com", score: 72, status: "interested", jobDesc: job_desc },
+    { id: "7", position: "DevOps Engineer", company: "Company G", link: "https://company-g.com", score: 78, status: "interested", jobDesc: job_desc },
+    { id: "8", position: "Graphic Designer", company: "Creative Studio H", link: "https://studio-h.com", score: 67, status: "interested", jobDesc: job_desc },
+    { id: "9", position: "Full Stack Developer", company: "Startup I", link: "https://startup-i.com", score: 85, status: "assessment", jobDesc: job_desc },
+    { id: "10", position: "AI Researcher", company: "TechLab J", link: "https://techlab-j.com", score: 88, status: "assessment", jobDesc: job_desc },
 ];
 
 export default function Dashboard() {
     const router = useRouter();
     const [data, setData] = useState({
-        wished: initialData.filter((job) => job.status === "wished"),
+        interested: initialData.filter((job) => job.status === "interested"),
         applied: initialData.filter((job) => job.status === "applied"),
         interviewing: initialData.filter((job) => job.status === "interviewing"),
         offer: initialData.filter((job) => job.status === "offer"),
         rejected: initialData.filter((job) => job.status === "rejected"),
+        assessment: initialData.filter((job) => job.status === 'assessment'),
     });
 
     const [openModal, setOpenModal] = useState(false);
@@ -65,31 +66,22 @@ export default function Dashboard() {
     const onDragEnd = (result) => {
         const { destination, source, draggableId } = result;
 
-        // If there's no destination (dropped outside), do nothing
         if (!destination) return;
-
-        // If the destination is the same as the source, no action is needed
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-        // Get the source and destination columns
-        const start = [...data[source.droppableId]]; // Use spread to avoid mutating the state directly
+        const start = [...data[source.droppableId]];
         const end = [...data[destination.droppableId]];
 
-        // Find the dragged card
-        const [movedCard] = start.splice(source.index, 1); // Remove the card from the source list
-
-        // Insert the moved card at the destination position
+        const [movedCard] = start.splice(source.index, 1);
         end.splice(destination.index, 0, movedCard);
 
-        // Update the state without modifying other items in the destination column
         setData({
             ...data,
-            [source.droppableId]: start, // Source column after removing the card
-            [destination.droppableId]: end, // Destination column with the moved card
+            [source.droppableId]: start,
+            [destination.droppableId]: end,
         });
     };
 
-    // Function to get the color for each status
     const getColumnColor = (status) => {
         switch (status) {
             case "applied":
@@ -100,8 +92,10 @@ export default function Dashboard() {
                 return "bg-green-100";
             case "rejected":
                 return "bg-red-100";
-            case "wished":
-                return "bg-purple-100"; // Purple for the "Wished" section
+            case "interested":
+                return "bg-purple-100";
+            case "assessment":
+                return "bg-orange-100";
             default:
                 return "bg-gray-100";
         }
@@ -121,69 +115,9 @@ export default function Dashboard() {
                 </Button>
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
-                {/* Wished Section: Placed on top with 4-column layout and background color */}
-                <div className="mb-8">
-                    <Droppable key="wished" droppableId="wished" direction="horizontal">
-                        {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                                className="bg-purple-100 p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-                            >
-                                <h2 className="col-span-4 text-lg font-semibold">Wished</h2>
-                                {data.wished.map((job, index) => (
-                                    <Draggable key={job.id} draggableId={job.id} index={index}>
-                                        {(provided) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className="bg-white p-4 rounded-lg shadow-md relative"
-                                            >
-                                                {/* Job score */}
-                                                <div className="absolute top-2 right-2 font-bold px-2 py-1 rounded">
-                                                    <span className="text-blue-500 text-lg sm:text-xs md:text-sm lg:text-xl">
-                                                        {job.score}%
-                                                    </span>
-                                                </div>
-
-                                                {/* Job title */}
-                                                <h3
-                                                    className="font-bold text-lg mb-1 truncate"
-                                                    onClick={() => handleCardClick(job)} // Modal still opens on card click
-                                                >
-                                                    {job.position}
-                                                </h3>
-
-                                                {/* Company name */}
-                                                <p className="text-sm text-gray-500 mb-2 truncate">{job.company}</p>
-
-                                                {/* Resume version */}
-                                                <p className="text-sm text-gray-600 truncate">
-                                                    Used <span className="font-semibold">Resume 1</span>
-                                                </p>
-
-                                                {/* Add button with icon in the bottom-right corner */}
-                                                <button
-                                                    onClick={() => handleCardClick(job)}
-                                                    className="absolute bottom-2 right-2 bg-gray-200 hover:bg-gray-300 p-1 rounded-full shadow-md"
-                                                    title="View Details"
-                                                >
-                                                    <RocketLaunchIcon fontSize="small" />
-                                                </button>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
-                </div>
-
-                {/* Other Sections: Applied, Interviewing, Offer, Rejected */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {statuses.slice(1).map((status) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {/* Render all sections in a 3-column grid */}
+                    {statuses.map((status) => (
                         <Droppable key={status} droppableId={status}>
                             {(provided) => (
                                 <div
@@ -248,7 +182,6 @@ export default function Dashboard() {
                 </div>
             </DragDropContext>
 
-            {/* Modal for job details */}
             <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg" fullWidth>
                 <DialogContent className="flex gap-8">
                     <div className="w-1/2 border-r pr-8 overflow-auto">

@@ -6,7 +6,8 @@ export default function ProfilePage() {
     const user = {
         username: "john_doe",
         email: "john.doe@example.com",
-        registrationDate: "2024-01-15T10:30:00Z", // Example registration date (ISO format)
+        registrationDate: "2024-01-15T10:30:00Z",
+        lastLogin: "2024-01-15T10:30:00Z",
     };
 
     const resumes = [
@@ -21,7 +22,9 @@ export default function ProfilePage() {
     ];
 
     // Format the registration date to a more readable format
-    const formattedDate = new Date(user.registrationDate).toLocaleString();
+    const formattedRegistrationDate = new Date(user.registrationDate).toLocaleString();
+
+    const formattedLastLoginDate = new Date(user.lastLogin).toLocaleString();
 
     // Format resume uploaded dates
     const formatDate = (date) => new Date(date).toLocaleString();
@@ -45,7 +48,11 @@ export default function ProfilePage() {
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Registered on</td>
-                            <td className="py-2 w-2/3">{formattedDate}</td>
+                            <td className="py-2 w-2/3">{formattedRegistrationDate}</td>
+                        </tr>
+                        <tr>
+                            <td className="pr-4 py-2 font-semibold w-1/3">Last login</td>
+                            <td className="py-2 w-2/3">{formattedLastLoginDate}</td>
                         </tr>
                     </tbody>
                 </table>
