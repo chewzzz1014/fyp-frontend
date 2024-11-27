@@ -3,23 +3,32 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '../_services/api';
+import { hashPassword, validateEmail } from '../_utils/auth';
+import { isTokenValid, getAccessToken } from '../_utils/auth';
 
 export default function LoginPage() {
+  const token = getAccessToken();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  if (isTokenValid(token)) {
+    router.back();
+  }
 
   const handleLogin = async (data) => {
     try {
-      const response = await login(data);
-      console.log(response);
+      // Hash the password before sending it to the backend
+      const hashedPassword = await hashPassword(data.password);
+      const loginData = { ...data, password: hashedPassword };
+
+      const response = await login(loginData);
+
+      // Store tokens in localStorage
       localStorage.setItem('access_token', response.access_token);
+
+      // Redirect to resume page
       router.push('/resume');
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
@@ -35,6 +44,7 @@ export default function LoginPage() {
 
     setErrorMessage('');
 
+    // Validate input fields
     if (!validateEmail(email)) {
       setErrorMessage('Please enter a valid email address.');
       return;
@@ -45,7 +55,7 @@ export default function LoginPage() {
       return;
     }
 
-    handleLogin({ email, password });
+    await handleLogin({ email, password });
   };
 
   const handleSignupRedirect = () => {

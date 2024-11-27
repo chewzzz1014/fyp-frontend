@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
 import { signup } from '../_services/api';
+import { hashPassword, validateEmail } from '../_utils/auth';
+import { isTokenValid, getAccessToken } from '../_utils/auth';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -14,34 +16,42 @@ export default function SignUpPage() {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const router = useRouter();
 
+  if (isTokenValid(token)) {
+    router.back();
+  }
+
   const handleSignup = async (data) => {
     try {
-      const response = await signup(data);
+      // Hash the password before sending it to the backend
+      const hashedPassword = await hashPassword(data.password);
+      const signupData = { ...data, password: hashedPassword };
+
+      const response = await signup(signupData);
+
+      // Store tokens in localStorage
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
+
+      // Show success dialog
       setIsSuccessOpen(true);
       setTimeout(() => {
         router.push('/resume');
       }, 3000);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
-        setErrorMessage(error.response.data.detail); // Show backend error
+        setErrorMessage(error.response.data.detail);
       } else {
         setErrorMessage("An unexpected error occurred. Please try again later.");
       }
     }
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setErrorMessage('');
 
+    // Validate input fields
     if (!username || !email || !password || !confirmPassword) {
       setErrorMessage('All fields are mandatory');
       return;
@@ -57,7 +67,7 @@ export default function SignUpPage() {
       return;
     }
 
-    handleSignup({ username, email, password });
+    await handleSignup({ username, email, password });
   };
 
   return (

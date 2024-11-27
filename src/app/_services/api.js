@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken } from '../_utils/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -18,7 +19,7 @@ export const logout = () => {
 };
 
 export const getProfile = async () => {
-    const token = localStorage.getItem('access_token');
+    const token = getAccessToken();
     const response = await axios.get(`${API_URL}/user/profile`, {
         headers: {
             Authorization: `Bearer ${token}`,
