@@ -25,3 +25,26 @@ export const uploadResume = async (data) => {
         throw new Error("Failed to connect to the server. Please try again later.");
     }
 };
+
+export const getResumes = async () => {
+    try {
+        const token = localStorage.getItem("access_token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const response = await axios.get(
+            `${API_URL}/resume`,
+            {
+                headers: {
+                    ...headers
+                },
+            }
+        );
+        console.log(response)
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.detail || "An error occurred while uploading the resume.");
+        }
+        throw new Error("Failed to connect to the server. Please try again later.");
+    }
+};

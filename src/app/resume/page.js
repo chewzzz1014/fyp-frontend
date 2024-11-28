@@ -23,7 +23,7 @@ import {
     Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { uploadResume } from "../_services/resume";
+import { uploadResume, getResumes } from "../_services/resume";
 
 export default function ResumePage() {
     const [uploadedResumes, setUploadedResumes] = useState([]);
@@ -31,13 +31,30 @@ export default function ResumePage() {
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSubmit, setIsLoadingSubmit] = useState(false);
+    const [isLoadingResumes, setIsLoadingResumes] = useState(true);
     const [isSuccessOpen, setIsSuccessOpen] = useState(false);
     const [resumeName, setResumeName] = useState("");
 
+    useEffect(() => {
+        const fetchResumes = async () => {
+            setIsLoadingResumes(true);
+            try {
+                const response = await getResumes();
+                console.log(response)
+                setUploadedResumes(response);
+            } catch (error) {
+                setError("Failed to fetch resumes");
+            } finally {
+                setIsLoadingResumes(false);
+            }
+        };
+        fetchResumes();
+    }, []);
+
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
-        const resume = uploadedResumes.find((r) => r.id === resumeId);
+        const resume = uploadedResumes.find((r) => r.resume_id === resumeId);
         setError("");
         setSelectedResume(resume);
     };
@@ -56,7 +73,7 @@ export default function ResumePage() {
 
     const handleDialogSubmit = async () => {
         setIsDialogOpen(false);
-        setIsLoading(true);
+        setIsLoadingSubmit(true);
 
         const formData = new FormData();
         formData.append("file", file);
@@ -65,9 +82,9 @@ export default function ResumePage() {
         try {
             const data = await uploadResume(formData);
             const newResume = {
-                id: data.resume_id,
-                name: resumeName,
-                content: data.resume_text,
+                resume_id: data.resume_id,
+                resume_name: resumeName,
+                resume_text: data.resume_text,
             };
             setUploadedResumes([...uploadedResumes, newResume]);
             setSelectedResume(newResume);
@@ -75,7 +92,7 @@ export default function ResumePage() {
         } catch (error) {
             setError(error.message);
         } finally {
-            setIsLoading(false);
+            setIsLoadingSubmit(false);
             setFile(null);
             setResumeName("");
         }
@@ -99,13 +116,13 @@ export default function ResumePage() {
                     <FormControl fullWidth sx={{ mr: 2 }}>
                         <InputLabel>Select a Resume</InputLabel>
                         <Select
-                            value={selectedResume ? selectedResume.id : ""}
+                            value={selectedResume ? selectedResume.resume_id : ""}
                             onChange={handleResumeChange}
                             label="Select a Resume"
                         >
-                            {uploadedResumes.map((resume) => (
-                                <MenuItem key={resume.id} value={resume.id}>
-                                    {resume.name}
+                            {!isLoadingResumes && uploadedResumes.map((resume) => (
+                                <MenuItem key={resume.resume_id} value={resume.resume_id} selected={selectedResume ? resume.resume_id === selectedResume.resume_id : false}>
+                                    {resume.resume_name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -134,7 +151,7 @@ export default function ResumePage() {
                     </Typography>
                     <Card variant="outlined">
                         <CardContent>
-                            <Typography>{selectedResume.content}</Typography>
+                            <Typography>{selectedResume.resume_text}</Typography>
                         </CardContent>
                     </Card>
                 </Box>
@@ -164,7 +181,7 @@ export default function ResumePage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {isLoading && (
+            {isLoadingSubmit && (
                 <Box
                     sx={{
                         position: "fixed",
