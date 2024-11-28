@@ -1,13 +1,22 @@
-import axios from "axios";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import axios from 'axios';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const uploadResume = async (data) => {
     try {
         const token = localStorage.getItem("access_token");
         const headers = { Authorization: `Bearer ${token}` };
 
-        const response = await axios.post("/api/upload_resume", formData, { headers });
+        const response = await axios.post(
+            `${API_URL}/resume/upload`,
+            data,
+            {
+                headers: {
+                    ...headers,
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+        console.log(response)
         return response.data;
     } catch (error) {
         if (error.response) {

@@ -23,7 +23,6 @@ import {
     Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { getUserIdFromToken } from "../_utils/auth";
 import { uploadResume } from "../_services/resume";
 
 export default function ResumePage() {
@@ -35,15 +34,6 @@ export default function ResumePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccessOpen, setIsSuccessOpen] = useState(false);
     const [resumeName, setResumeName] = useState("");
-    const [userId, setUserId] = useState(null);
-
-    useEffect(() => {
-        const token = localStorage.getItem("access_token");
-        if (token) {
-            const id = getUserIdFromToken(token);
-            setUserId(id);
-        }
-    }, []);
 
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
@@ -71,7 +61,6 @@ export default function ResumePage() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("resume_name", resumeName);
-        formData.append("user_id", userId); // Send user ID with the request
 
         try {
             const data = await uploadResume(formData);
