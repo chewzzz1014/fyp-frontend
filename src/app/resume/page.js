@@ -24,6 +24,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { uploadResume, getResumes } from "../_services/resume";
+import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
+
+GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.min.mjs`;
 
 export default function ResumePage() {
     const [uploadedResumes, setUploadedResumes] = useState([]);
@@ -59,15 +62,26 @@ export default function ResumePage() {
         setSelectedResume(resume);
     };
 
-    const handleFileUpload = (event) => {
+    const handleFileUpload = async (event) => {
         const uploadedFile = event.target.files[0];
-        if (uploadedFile && uploadedFile.type === "application/pdf") {
+        if (!uploadedFile || uploadedFile.type !== "application/pdf") {
+            setError("Please upload a valid PDF file.");
+            return;
+        }
+
+        try {
+            const pdf = await getDocument(URL.createObjectURL(uploadedFile)).promise;
+            if (pdf.numPages > 6) {
+                setError("The PDF exceeds the maximum allowed page limit of 6.");
+                return;
+            }
             setError("");
             setFile(uploadedFile);
             setResumeName(uploadedFile.name.replace(/\.pdf$/, ""));
             setIsDialogOpen(true);
-        } else {
-            setError("Please upload a valid PDF file.");
+        } catch (err) {
+            console.error(err);
+            setError("Failed to process the PDF file.");
         }
     };
 
@@ -121,7 +135,7 @@ export default function ResumePage() {
                             label="Select a Resume"
                         >
                             {!isLoadingResumes && uploadedResumes.map((resume) => (
-                                <MenuItem key={resume.resume_id} value={resume.resume_id} selected={selectedResume ? resume.resume_id === selectedResume.resume_id : false}>
+                                <MenuItem key={resume.resume_id} value={resume.resume_id}>
                                     {resume.resume_name}
                                 </MenuItem>
                             ))}
