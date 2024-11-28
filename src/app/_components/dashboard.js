@@ -115,7 +115,7 @@ export default function Dashboard() {
                 </Button>
             </div>
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-black">
                     {/* Render all sections in a 3-column grid */}
                     {statuses.map((status) => (
                         <Droppable key={status} droppableId={status}>

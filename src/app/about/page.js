@@ -33,7 +33,7 @@ export default function AboutPage() {
 
             {/* NER Table Section */}
             <h2 className="text-2xl font-semibold mt-6 mb-4">Entities Extracted from Resume</h2>
-            <div className="overflow-x-auto bg-white text-black shadow-md rounded-lg">
+            <div className="overflow-x-auto text-black shadow-md rounded-lg">
                 <table className="min-w-full table-auto">
                     <thead>
                         <tr className="bg-blue-600 text-white">

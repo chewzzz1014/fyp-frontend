@@ -30,8 +30,20 @@ export function isTokenValid(token) {
 }
 
 export const getAccessToken = () => {
+    console.log('getting token...')
     if (typeof window !== "undefined") {
+        console.log(localStorage.getItem("access_token"));
         return localStorage.getItem("access_token");
     }
     return null;
+};
+
+export const getUserIdFromToken = (token) => {
+    try {
+        const decoded = jwtDecode(token);
+        return decoded?.sub || null;
+    } catch (error) {
+        console.error("Error decoding token:", error);
+        return null;
+    }
 };

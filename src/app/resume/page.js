@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -13,7 +13,6 @@ import {
     Card,
     CardContent,
     FormHelperText,
-    Grid,
     IconButton,
     Dialog,
     DialogTitle,
@@ -24,15 +23,11 @@ import {
     Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { resume_text_1, resume_text_2 } from "../_constants/resume";
+import { getUserIdFromToken } from "../_utils/auth";
 import { uploadResume } from "../_services/resume";
 
 export default function ResumePage() {
-    const [uploadedResumes, setUploadedResumes] = useState([
-        { id: 1, name: "Resume 1", content: resume_text_1 },
-        { id: 2, name: "Resume 2", content: resume_text_2 },
-    ]);
-
+    const [uploadedResumes, setUploadedResumes] = useState([]);
     const [selectedResume, setSelectedResume] = useState(null);
     const [file, setFile] = useState(null);
     const [error, setError] = useState("");
@@ -40,6 +35,15 @@ export default function ResumePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccessOpen, setIsSuccessOpen] = useState(false);
     const [resumeName, setResumeName] = useState("");
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        if (token) {
+            const id = getUserIdFromToken(token);
+            setUserId(id);
+        }
+    }, []);
 
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
@@ -67,11 +71,12 @@ export default function ResumePage() {
         const formData = new FormData();
         formData.append("file", file);
         formData.append("resume_name", resumeName);
+        formData.append("user_id", userId); // Send user ID with the request
 
         try {
             const data = await uploadResume(formData);
             const newResume = {
-                id: uploadedResumes.length + 1,
+                id: data.resume_id,
                 name: resumeName,
                 content: data.resume_text,
             };
@@ -79,63 +84,47 @@ export default function ResumePage() {
             setSelectedResume(newResume);
             setIsSuccessOpen(true);
         } catch (error) {
-            setError(error.message); // Display error message
+            setError(error.message);
         } finally {
             setIsLoading(false);
-            setFile(null); // Reset file state
-            setResumeName(""); // Reset resume name state
+            setFile(null);
+            setResumeName("");
         }
     };
 
     const handleFileReset = () => {
-        setError(""); // Clear any previous errors
-        setFile(null); // Reset file input
-        setResumeName(""); // Clear the resume name field
-        setIsDialogOpen(false); // Close the dialog box
+        setError("");
+        setFile(null);
+        setResumeName("");
+        setIsDialogOpen(false);
     };
 
     return (
         <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
-
-            {/* Resume Selection Section */}
-            <Box mb={4} sx={{ mx: 4 }}>
+            <h1 className="text-3xl font-bold mb-8">Resume</h1>
+            <Box mb={4}>
                 <Typography variant="h5" gutterBottom>
                     Resume
                 </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
-                    {uploadedResumes.length > 0 ? (
-                        <FormControl fullWidth sx={{ mr: 2 }}>
-                            <InputLabel>Select a Resume</InputLabel>
-                            <Select
-                                value={selectedResume ? selectedResume.id : ""}
-                                onChange={handleResumeChange}
-                                label="Select a Resume"
-                            >
-                                {uploadedResumes.map((resume) => (
-                                    <MenuItem key={resume.id} value={resume.id}>
-                                        {resume.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    ) : (
-                        <TextField
-                            label="No resume available. Add yours now!"
-                            variant="outlined"
-                            disabled
-                            fullWidth
-                            sx={{ mr: 2 }}
-                        />
-                    )}
-
+                    <FormControl fullWidth sx={{ mr: 2 }}>
+                        <InputLabel>Select a Resume</InputLabel>
+                        <Select
+                            value={selectedResume ? selectedResume.id : ""}
+                            onChange={handleResumeChange}
+                            label="Select a Resume"
+                        >
+                            {uploadedResumes.map((resume) => (
+                                <MenuItem key={resume.id} value={resume.id}>
+                                    {resume.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     <IconButton
                         color="primary"
                         onClick={() => document.getElementById("file-input").click()}
-                        sx={{
-                            backgroundColor: "#1565c0",
-                            ":hover": { backgroundColor: "#049DD9" },
-                        }}
+                        sx={{ backgroundColor: "#1565c0", ":hover": { backgroundColor: "#049DD9" } }}
                     >
                         <AddIcon sx={{ color: "#ffffff" }} />
                     </IconButton>
@@ -149,10 +138,8 @@ export default function ResumePage() {
                 </Box>
                 {error && <FormHelperText error>{error}</FormHelperText>}
             </Box>
-
-            {/* Selected Resume Content Preview */}
             {selectedResume && (
-                <Box mb={4} sx={{ mx: 4 }}>
+                <Box mb={4}>
                     <Typography variant="h5" gutterBottom>
                         Named Entity Recognition
                     </Typography>
@@ -163,8 +150,6 @@ export default function ResumePage() {
                     </Card>
                 </Box>
             )}
-
-            {/* Name Resume Dialog */}
             <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} fullWidth>
                 <DialogTitle>Name Your Resume</DialogTitle>
                 <DialogContent>
@@ -190,8 +175,6 @@ export default function ResumePage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-
-            {/* Loading Animation */}
             {isLoading && (
                 <Box
                     sx={{
@@ -210,21 +193,8 @@ export default function ResumePage() {
                     <CircularProgress />
                 </Box>
             )}
-
-            {/* Success Popup */}
-            <Dialog open={isSuccessOpen} onClose={() => setIsSuccessOpen(false)}>
-                <DialogTitle>Resume Uploaded Successfully</DialogTitle>
-                <DialogContent>
-                    <Typography>Explore what entities are found in your resume!</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setIsSuccessOpen(false)}>Close</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Snackbar for Errors */}
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
-                <Alert onClose={() => setError("")} severity="error" sx={{ width: "100%" }}>
+                <Alert onClose={() => setError("")} severity="error">
                     {error}
                 </Alert>
             </Snackbar>
