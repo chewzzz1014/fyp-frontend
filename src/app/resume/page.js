@@ -24,11 +24,10 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { uploadResume, getResumes } from "../_services/resume";
-import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
-
-GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.min.mjs`;
 
 export default function ResumePage() {
+    const PDF_MAX_SIZE = 200 * 1024; // 200 KB
+
     const [uploadedResumes, setUploadedResumes] = useState([]);
     const [selectedResume, setSelectedResume] = useState(null);
     const [file, setFile] = useState(null);
@@ -63,18 +62,19 @@ export default function ResumePage() {
     };
 
     const handleFileUpload = async (event) => {
-        const uploadedFile = event.target.files[0];
-        if (!uploadedFile || uploadedFile.type !== "application/pdf") {
-            setError("Please upload a valid PDF file.");
-            return;
-        }
-
         try {
-            const pdf = await getDocument(URL.createObjectURL(uploadedFile)).promise;
-            if (pdf.numPages > 6) {
-                setError("The PDF exceeds the maximum allowed page limit of 6.");
+            const uploadedFile = event.target.files[0];
+            console.log(uploadedFile)
+            if (!uploadedFile || uploadedFile.type !== "application/pdf") {
+                setError("Please upload a valid PDF file.");
                 return;
             }
+
+            if (uploadedFile.size > PDF_MAX_SIZE) {
+                setError('The file size must be smaller than or equal to 200 KB.');
+                return;
+            }
+
             setError("");
             setFile(uploadedFile);
             setResumeName(uploadedFile.name.replace(/\.pdf$/, ""));
@@ -95,6 +95,9 @@ export default function ResumePage() {
 
         try {
             const data = await uploadResume(formData);
+            console.log(111111111111)
+            console.log(data)
+            console.log(2222222222222)
             const newResume = {
                 resume_id: data.resume_id,
                 resume_name: resumeName,
@@ -208,9 +211,13 @@ export default function ResumePage() {
                         alignItems: "center",
                         backgroundColor: "rgba(0, 0, 0, 0.5)",
                         zIndex: 1200,
+                        flexDirection: "column",
                     }}
                 >
-                    <CircularProgress />
+                    <CircularProgress color="primary" sx={{ mb: 2 }} />
+                    <Typography variant="h6" color="white">
+                        Analyzing your resume...
+                    </Typography>
                 </Box>
             )}
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
