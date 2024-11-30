@@ -1,3 +1,17 @@
+export const NER_LABEL_COLORS = {
+    NAME: "#87CEFA",
+    LOC: "#60c497",
+    PHONE: "#a0c460",
+    EMAIL: "#FFFACD",
+    JOB: "#FFD700",
+    SKILL: "#FFB6C1",
+    COMPANY: "#e34fe3",
+    "WORK PER": "#d4332a",
+    DEG: "#32CD32",
+    UNI: "#b0a2a2",
+    "STUDY PER": "#E6A8D7",
+};
+
 export const RESUME_TEXT_1 = `
 Zi Qing Chew
 chewziqing@gmail.com | 016-2892475 | Kuala Lumpur, Malaysia | linkedin.com/in/ziqingchew | github.com/chewzzz1014
@@ -76,17 +90,3 @@ Job Requirement
 6. Strong foundation in frameworks such as Spring, jUnit, etc.
 7. Able to work in a fast paced and result driven environment.
 `;
-
-export const NER_LABEL_COLORS = {
-    NAME: "#87CEFA", // Light Sky Blue
-    LOC: "#98FB98", // Pale Green
-    PHONE: "#90EE90", // Light Green
-    EMAIL: "#FFFACD", // Lemon Chiffon
-    JOB: "#FFD700", // Gold
-    SKILL: "#FFB6C1", // Light Pink
-    COMPANY: "#D8BFD8", // Thistle
-    "WORK PER": "#F08080", // Light Coral
-    DEG: "#32CD32", // Lime Green
-    UNI: "#D3D3D3", // Light Gray
-    "STUDY PER": "#E6A8D7", // Light Pink
-};
