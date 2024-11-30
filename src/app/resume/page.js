@@ -126,9 +126,6 @@ export default function ResumePage() {
         <div className="min-h-screen p-8">
             <h1 className="text-3xl font-bold mb-8">Resume</h1>
             <Box mb={4}>
-                <Typography variant="h5" gutterBottom>
-                    Resume
-                </Typography>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <FormControl fullWidth sx={{ mr: 2 }}>
                         <InputLabel>Select a Resume</InputLabel>

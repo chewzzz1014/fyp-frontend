@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -15,26 +15,17 @@ import {
     FormHelperText,
     Grid,
 } from "@mui/material";
-import { RESUME_TEXT_1, RESUME_TEXT_2 } from "../_constants/resume";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { JOB_APPLICATION_STATUSES } from "../_constants/job";
 import { useRouter } from "next/navigation";
+import { getResumes } from "../_services/resume";
+import NERRenderer from "../_components/ner-renderer";
 
 export default function JobResumePage() {
     const router = useRouter();
 
-    const statuses = ["Interested", "Applied", "Assessment", "Interviewing", "Offer", "Rejected"];
-
-    // Sample resumes
-    const uploadedResumes = [
-        { id: 1, name: "Resume 1", content: RESUME_TEXT_1 },
-        { id: 2, name: "Resume 2", content: RESUME_TEXT_2 },
-    ];
-
-    // State for resume selection and preview
+    const [uploadedResumes, setUploadedResumes] = useState([]);
+    const [isLoadingResumes, setIsLoadingResumes] = useState(true);
     const [selectedResume, setSelectedResume] = useState(null);
-
-    // State for job details
     const [jobDetails, setJobDetails] = useState({
         title: "",
         company: "",
@@ -42,7 +33,7 @@ export default function JobResumePage() {
         applicationStatus: "Interested",
         jobDesc: "",
     });
-
+    const [resumeError, setResumeError] = useState("");
     const [errors, setErrors] = useState({
         resume: false,
         title: false,
@@ -52,10 +43,26 @@ export default function JobResumePage() {
         jobDesc: false,
     });
 
-    // Handle resume selection
+    useEffect(() => {
+        const fetchResumes = async () => {
+            setIsLoadingResumes(true);
+            try {
+                const response = await getResumes();
+                console.log(response)
+                setUploadedResumes(response);
+            } catch (error) {
+                setResumeError("Failed to fetch resumes");
+            } finally {
+                setIsLoadingResumes(false);
+            }
+        };
+        fetchResumes();
+    }, []);
+
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
-        const resume = uploadedResumes.find((r) => r.id === resumeId);
+        const resume = uploadedResumes.find((r) => r.resume_id === resumeId);
+        setResumeError("");
         setSelectedResume(resume);
     };
 
@@ -97,16 +104,16 @@ export default function JobResumePage() {
                     <Typography variant="h5" gutterBottom>
                         Resume
                     </Typography>
-                    <FormControl fullWidth sx={{ mb: 2 }} error={errors.resume}>
+                    <FormControl fullWidth sx={{ mb: 2 }} error={resumeError}>
                         <InputLabel>Select a Resume</InputLabel>
                         <Select
-                            value={selectedResume ? selectedResume.id : ""}
+                            value={selectedResume ? selectedResume.resume_id : ""}
                             onChange={handleResumeChange}
                             label="Select a Resume"
                         >
-                            {uploadedResumes.map((resume) => (
-                                <MenuItem key={resume.id} value={resume.id}>
-                                    {resume.name}
+                            {!isLoadingResumes && uploadedResumes.map((resume) => (
+                                <MenuItem key={resume.resume_id} value={resume.resume_id}>
+                                    {resume.resume_name}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -118,16 +125,21 @@ export default function JobResumePage() {
                     </FormControl>
 
                     {selectedResume && (
-                        <Card variant="outlined">
-                            <CardContent>
-                                <Typography variant="subtitle1">
-                                    <strong>Preview:</strong>
-                                </Typography>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {selectedResume.content}
-                                </ReactMarkdown>
-                            </CardContent>
-                        </Card>
+                        <Box mb={4}>
+                            <Typography variant="h5" gutterBottom>
+                                Named Entity Recognition
+                            </Typography>
+                            <Card variant="outlined" sx={{ backgroundColor: "#F5F5F5" }}>
+                                <CardContent>
+                                    {selectedResume.ner_prediction
+                                        ? <NERRenderer
+                                            text={selectedResume.resume_text}
+                                            entities={selectedResume.ner_prediction} />
+                                        : <Typography>{selectedResume.resume_text}</Typography>
+                                    }
+                                </CardContent>
+                            </Card>
+                        </Box>
                     )}
                 </Box>
 
@@ -187,7 +199,7 @@ export default function JobResumePage() {
                                     onChange={handleInputChange}
                                     label="Application Status"
                                 >
-                                    {statuses.map((value, idx) => (
+                                    {JOB_APPLICATION_STATUSES.map((value, idx) => (
                                         <MenuItem key={idx} value={value}>
                                             {value}
                                         </MenuItem>

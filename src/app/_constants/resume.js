@@ -78,15 +78,15 @@ Job Requirement
 `;
 
 export const NER_LABEL_COLORS = {
-    NAME: "#87CEFA",
-    LOC: "#98FB98",
-    PHONE: "#90EE90",
-    EMAIL: "#FFFACD",
-    JOB: "#B0C4DE",
-    SKILL: "#ADD8E6",
-    COMPANY: "#D8BFD8",
-    "WORK PER": "#F08080",
-    DEG: "#6495ED",
-    UNI: "#D3D3D3",
-    "STUDY PER": "#E6A8D7",
+    NAME: "#87CEFA", // Light Sky Blue
+    LOC: "#98FB98", // Pale Green
+    PHONE: "#90EE90", // Light Green
+    EMAIL: "#FFFACD", // Lemon Chiffon
+    JOB: "#FFD700", // Gold
+    SKILL: "#FFB6C1", // Light Pink
+    COMPANY: "#D8BFD8", // Thistle
+    "WORK PER": "#F08080", // Light Coral
+    DEG: "#32CD32", // Lime Green
+    UNI: "#D3D3D3", // Light Gray
+    "STUDY PER": "#E6A8D7", // Light Pink
 };
