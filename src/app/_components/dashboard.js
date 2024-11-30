@@ -15,23 +15,23 @@ import {
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { resume_text_1, job_desc } from "../_constants/resume";
+import { RESUME_TEXT_1, JOB_DESC } from "../_constants/resume";
 
 // Define the statuses in an array, including "interested"
 const statuses = ["interested", "applied", "assessment", "interviewing", "offer", "rejected"];
 
 // Initial job application data
 const initialData = [
-    { id: "1", position: "Software Engineer", company: "Company A", link: "https://company-a.com", score: 75, status: "applied", jobDesc: job_desc },
-    { id: "2", position: "Data Scientist", company: "Company B", link: "https://company-b.com", score: 80, status: "applied", jobDesc: job_desc },
-    { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing", jobDesc: job_desc },
-    { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer", jobDesc: job_desc },
-    { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected", jobDesc: job_desc },
-    { id: "6", position: "Product Manager", company: "Company F", link: "https://company-f.com", score: 72, status: "interested", jobDesc: job_desc },
-    { id: "7", position: "DevOps Engineer", company: "Company G", link: "https://company-g.com", score: 78, status: "interested", jobDesc: job_desc },
-    { id: "8", position: "Graphic Designer", company: "Creative Studio H", link: "https://studio-h.com", score: 67, status: "interested", jobDesc: job_desc },
-    { id: "9", position: "Full Stack Developer", company: "Startup I", link: "https://startup-i.com", score: 85, status: "assessment", jobDesc: job_desc },
-    { id: "10", position: "AI Researcher", company: "TechLab J", link: "https://techlab-j.com", score: 88, status: "assessment", jobDesc: job_desc },
+    { id: "1", position: "Software Engineer", company: "Company A", link: "https://company-a.com", score: 75, status: "applied", jobDesc: JOB_DESC },
+    { id: "2", position: "Data Scientist", company: "Company B", link: "https://company-b.com", score: 80, status: "applied", jobDesc: JOB_DESC },
+    { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing", jobDesc: JOB_DESC },
+    { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer", jobDesc: JOB_DESC },
+    { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected", jobDesc: JOB_DESC },
+    { id: "6", position: "Product Manager", company: "Company F", link: "https://company-f.com", score: 72, status: "interested", jobDesc: JOB_DESC },
+    { id: "7", position: "DevOps Engineer", company: "Company G", link: "https://company-g.com", score: 78, status: "interested", jobDesc: JOB_DESC },
+    { id: "8", position: "Graphic Designer", company: "Creative Studio H", link: "https://studio-h.com", score: 67, status: "interested", jobDesc: JOB_DESC },
+    { id: "9", position: "Full Stack Developer", company: "Startup I", link: "https://startup-i.com", score: 85, status: "assessment", jobDesc: JOB_DESC },
+    { id: "10", position: "AI Researcher", company: "TechLab J", link: "https://techlab-j.com", score: 88, status: "assessment", jobDesc: JOB_DESC },
 ];
 
 export default function Dashboard() {
@@ -190,7 +190,7 @@ export default function Dashboard() {
                                 <Typography variant="subtitle1">
                                     <strong>Resume 1</strong>
                                 </Typography>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{resume_text_1}</ReactMarkdown>
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{RESUME_TEXT_1}</ReactMarkdown>
                             </CardContent>
                         </Card>
                     </div>

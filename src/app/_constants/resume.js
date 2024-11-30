@@ -1,4 +1,4 @@
-export const resume_text_1 = `
+export const RESUME_TEXT_1 = `
 Zi Qing Chew
 chewziqing@gmail.com | 016-2892475 | Kuala Lumpur, Malaysia | linkedin.com/in/ziqingchew | github.com/chewzzz1014
 EDUCATION
@@ -42,13 +42,13 @@ Frameworks and Libraries: Spring, Spring Boot, TypeScript, Node.js, Express.js, 
 Tools: Git, Github, Jira, Tableau, Excel, Jupyter Notebook, Google Colab, VSCode, IntelliJ
 `;
 
-export const resume_text_2 = `
+export const RESUME_TEXT_2 = `
 John Doe lives at 1234 Elm Street in Los Angeles, CA 90001. He can be reached at +1 (555) 123-4567 or via email at john.doe@example.com. John is a results-driven software engineer with over 5 years of experience in web development and cloud infrastructure, with strong knowledge of JavaScript, Python, and cloud technologies like AWS and Azure. Currently, he works as a Software Engineer at Google LLC in San Francisco, CA, where he has been employed since August 2019. In this role, he has developed scalable web applications using JavaScript, Node.js, and React, deployed and maintained cloud infrastructure on AWS, reducing downtime by 20%, and led a team of 4 engineers to enhance backend performance by 30%. Previously, he worked as a Junior Developer at Tech Innovators Inc. in Austin, TX, from July 2017 to July 2019, where he created RESTful APIs using Python and Flask, collaborated with front-end developers to build and deploy user-facing applications, and wrote unit and integration tests, improving code coverage by 15%.
 
 John holds a Master of Science in Computer Science from the University of California, Berkeley, with a graduation date of May 2017, and a Bachelor of Science in Information Technology from the University of Texas at Austin, graduated in May 2015. His skillset includes proficiency in programming languages like Python, JavaScript, and Java; frameworks such as React, Flask, and Django; cloud platforms including AWS, Google Cloud, and Azure; as well as other tools like Git, Docker, Kubernetes, and SQL. He is certified as an AWS Certified Solutions Architect – Associate, earned in 2020, and as a Google Professional Cloud Architect, earned in 2021'
 `
 
-export const job_desc = `
+export const JOB_DESC = `
 Basic information
 Location: Kuala Lumpur
 Working years: More than 1 years
@@ -76,3 +76,17 @@ Job Requirement
 6. Strong foundation in frameworks such as Spring, jUnit, etc.
 7. Able to work in a fast paced and result driven environment.
 `;
+
+export const NER_LABEL_COLORS = {
+    NAME: "#87CEFA",
+    LOC: "#98FB98",
+    PHONE: "#90EE90",
+    EMAIL: "#FFFACD",
+    JOB: "#B0C4DE",
+    SKILL: "#ADD8E6",
+    COMPANY: "#D8BFD8",
+    "WORK PER": "#F08080",
+    DEG: "#6495ED",
+    UNI: "#D3D3D3",
+    "STUDY PER": "#E6A8D7",
+};

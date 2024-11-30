@@ -15,7 +15,7 @@ import {
     FormHelperText,
     Grid,
 } from "@mui/material";
-import { resume_text_1, resume_text_2 } from "../_constants/resume";
+import { RESUME_TEXT_1, RESUME_TEXT_2 } from "../_constants/resume";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
@@ -27,8 +27,8 @@ export default function JobResumePage() {
 
     // Sample resumes
     const uploadedResumes = [
-        { id: 1, name: "Resume 1", content: resume_text_1 },
-        { id: 2, name: "Resume 2", content: resume_text_2 },
+        { id: 1, name: "Resume 1", content: RESUME_TEXT_1 },
+        { id: 2, name: "Resume 2", content: RESUME_TEXT_2 },
     ];
 
     // State for resume selection and preview

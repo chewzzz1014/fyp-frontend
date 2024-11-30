@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { uploadResume, getResumes } from "../_services/resume";
+import NERRenderer from "../_components/ner-renderer";
 
 export default function ResumePage() {
     const PDF_MAX_SIZE = 200 * 1024; // 200 KB
@@ -95,13 +96,12 @@ export default function ResumePage() {
 
         try {
             const data = await uploadResume(formData);
-            console.log(111111111111)
             console.log(data)
-            console.log(2222222222222)
             const newResume = {
                 resume_id: data.resume_id,
                 resume_name: resumeName,
                 resume_text: data.resume_text,
+                ner_prediction: data.ner_prediction || [],
             };
             setUploadedResumes([...uploadedResumes, newResume]);
             setSelectedResume(newResume);
@@ -166,9 +166,14 @@ export default function ResumePage() {
                     <Typography variant="h5" gutterBottom>
                         Named Entity Recognition
                     </Typography>
-                    <Card variant="outlined">
+                    <Card variant="outlined" sx={{ backgroundColor: "#F5F5F5" }}>
                         <CardContent>
-                            <Typography>{selectedResume.resume_text}</Typography>
+                            {selectedResume.ner_prediction
+                                ? <NERRenderer
+                                    text={selectedResume.resume_text}
+                                    entities={selectedResume.ner_prediction} />
+                                : <Typography>{selectedResume.resume_text}</Typography>
+                            }
                         </CardContent>
                     </Card>
                 </Box>
