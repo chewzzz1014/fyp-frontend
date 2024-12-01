@@ -21,6 +21,7 @@ import {
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getJobResume } from "@/app/_services/job-resume";
+import { formatJobResumeScore } from "@/app/_utils/job-resume";
 import NERRenderer from "@/app/_components/ner-renderer";
 
 export default function JobResumeMatchingPage() {
@@ -56,10 +57,6 @@ export default function JobResumeMatchingPage() {
         setIsDialogOpen(false);
         router.push("/dashboard"); // Redirect to dashboard
     };
-
-    const formatJobResumeScore = (score) => {
-        return (Math.max(score, 0) * 100).toFixed(2);
-    }
 
     if (error) {
         return <div className="min-h-screen p-8">

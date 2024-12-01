@@ -1,37 +1,70 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+    Box,
+    Typography,
+    Snackbar,
+    Alert,
+    CircularProgress
+} from "@mui/material";
+import { getProfile } from "../_services/profile";
 
 export default function ProfilePage() {
-    const user = {
-        username: "john_doe",
-        email: "john.doe@example.com",
-        registrationDate: "2024-01-15T10:30:00Z",
-        lastLogin: "2024-01-15T10:30:00Z",
-    };
+    const [error, setError] = useState("");
+    const [profile, setProfile] = useState(null);
 
-    const resumes = [
-        {
-            uploadedDate: "2024-11-10T14:30:00Z",
-            resumeName: "John_Doe_Resume_2024.pdf"
-        },
-        {
-            uploadedDate: "2024-11-05T10:00:00Z",
-            resumeName: "John_Doe_Resume_2023.pdf"
-        },
-    ];
+    useEffect(() => {
+        const fetchResumes = async () => {
+            try {
+                const response = await getProfile();
+                setProfile(response);
+            } catch (error) {
+                setError("Failed to fetch job-resume");
+            }
+        };
+        fetchResumes();
+    }, []);
 
-    // Format the registration date to a more readable format
-    const formattedRegistrationDate = new Date(user.registrationDate).toLocaleString();
-
-    const formattedLastLoginDate = new Date(user.lastLogin).toLocaleString();
-
-    // Format resume uploaded dates
     const formatDate = (date) => new Date(date).toLocaleString();
+
+    if (error) {
+        return <div className="min-h-screen p-8">
+            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
+                <Alert onClose={() => setError("")} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
+        </div>;
+    }
+
+    if (!profile) {
+        return (
+            <Box
+                sx={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    zIndex: 1200,
+                    flexDirection: "column",
+                }}
+            >
+                <CircularProgress color="primary" sx={{ mb: 2 }} />
+                <Typography variant="h6" color="white">
+                    Fetching data for you...
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <div className="p-8">
-            {/* Title Section */}
             <h1 className="text-3xl font-bold mx-8 mb-8">Profile</h1>
 
             {/* Profile Details Section - Invisible table */}
@@ -40,19 +73,21 @@ export default function ProfilePage() {
                     <tbody>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Username</td>
-                            <td className="py-2 w-2/3">{user.username}</td>
+                            <td className="py-2 w-2/3">{profile.username}</td>
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Email</td>
-                            <td className="py-2 w-2/3">{user.email}</td>
+                            <td className="py-2 w-2/3">{profile.email}</td>
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Registered on</td>
-                            <td className="py-2 w-2/3">{formattedRegistrationDate}</td>
+                            <td className="py-2 w-2/3">{new Date(profile.created_at).toLocaleString()}</td>
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Last login</td>
-                            <td className="py-2 w-2/3">{formattedLastLoginDate}</td>
+                            <td className="py-2 w-2/3">{profile.last_login
+                                ? new Date(profile.last_login).toLocaleString() : new Date(profile.created_at).toLocaleString()}
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -69,10 +104,10 @@ export default function ProfilePage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {resumes.map((resume, index) => (
-                            <tr key={index} className="border-t">
-                                <td className="px-4 py-2 text-center">{formatDate(resume.uploadedDate)}</td>
-                                <td className="px-4 py-2 text-center">{resume.resumeName}</td>
+                        {profile.resumes.map((resume) => (
+                            <tr key={resume.resume_id} className="border-t">
+                                <td className="px-4 py-2 text-center">{formatDate(resume.uploaded_on)}</td>
+                                <td className="px-4 py-2 text-center">{resume.resume_name}</td>
                             </tr>
                         ))}
                     </tbody>

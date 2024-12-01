@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
@@ -11,55 +11,68 @@ import {
     Card,
     CardContent,
     Typography,
+    CircularProgress,
+    Box
 } from "@mui/material";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { RESUME_TEXT_1, JOB_DESC } from "../_constants/resume";
-
-// Define the statuses in an array, including "interested"
-const statuses = ["interested", "applied", "assessment", "interviewing", "offer", "rejected"];
-
-// Initial job application data
-const initialData = [
-    { id: "1", position: "Software Engineer", company: "Company A", link: "https://company-a.com", score: 75, status: "applied", jobDesc: JOB_DESC },
-    { id: "2", position: "Data Scientist", company: "Company B", link: "https://company-b.com", score: 80, status: "applied", jobDesc: JOB_DESC },
-    { id: "3", position: "Frontend Developer", company: "Company C", link: "https://company-c.com", score: 90, status: "interviewing", jobDesc: JOB_DESC },
-    { id: "4", position: "Backend Engineer", company: "Company D", link: "https://company-d.com", score: 85, status: "offer", jobDesc: JOB_DESC },
-    { id: "5", position: "UX Designer", company: "Company E", link: "https://company-e.com", score: 70, status: "rejected", jobDesc: JOB_DESC },
-    { id: "6", position: "Product Manager", company: "Company F", link: "https://company-f.com", score: 72, status: "interested", jobDesc: JOB_DESC },
-    { id: "7", position: "DevOps Engineer", company: "Company G", link: "https://company-g.com", score: 78, status: "interested", jobDesc: JOB_DESC },
-    { id: "8", position: "Graphic Designer", company: "Creative Studio H", link: "https://studio-h.com", score: 67, status: "interested", jobDesc: JOB_DESC },
-    { id: "9", position: "Full Stack Developer", company: "Startup I", link: "https://startup-i.com", score: 85, status: "assessment", jobDesc: JOB_DESC },
-    { id: "10", position: "AI Researcher", company: "TechLab J", link: "https://techlab-j.com", score: 88, status: "assessment", jobDesc: JOB_DESC },
-];
+import { getAllJobResumes } from "../_services/job-resume";
+import { getJobStatuses } from "../_services/job";
+import { JOB_APPLICATION_STATUS_COLOURS } from "../_constants/job";
+import { formatJobResumeScore, getJobStatusName } from "@/app/_utils/job-resume";
+import NERRenderer from "./ner-renderer";
 
 export default function Dashboard() {
     const router = useRouter();
-    const [data, setData] = useState({
-        interested: initialData.filter((job) => job.status === "interested"),
-        applied: initialData.filter((job) => job.status === "applied"),
-        interviewing: initialData.filter((job) => job.status === "interviewing"),
-        offer: initialData.filter((job) => job.status === "offer"),
-        rejected: initialData.filter((job) => job.status === "rejected"),
-        assessment: initialData.filter((job) => job.status === 'assessment'),
-    });
 
+    const [data, setData] = useState([]);
+    const [isLoadingData, setIsLoadingData] = useState(false);
+    const [jobStatuses, setJobStatuses] = useState([]);
+    const [isLoadingJobStatuses, setIsLoadingJobStatuses] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-    const [selectedJob, setSelectedJob] = useState(null);
+    const [selectedJobResume, setSelectedJobResume] = useState(null);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const fetchAllJobResumes = async () => {
+            setIsLoadingData(true);
+            try {
+                const response = await getAllJobResumes();
+                console.log(response)
+                setData(response);
+            } catch (error) {
+                setError("Failed to fetch data");
+            } finally {
+                setIsLoadingData(false);
+            }
+        };
+        const fetchJobStatuses = async () => {
+            setIsLoadingJobStatuses(true);
+            try {
+                const response = await getJobStatuses();
+                console.log(response)
+                setJobStatuses(response);
+            } catch (error) {
+                setError("Failed to fetch job statuses")
+            } finally {
+                setIsLoadingJobStatuses(false);
+            }
+        };
+        fetchAllJobResumes();
+        fetchJobStatuses();
+    }, []);
 
     const handleExploreNowClick = () => {
         router.push("/job-resume"); // Replace with your target page path
     };
 
-    const handleCardClick = (job) => {
-        setSelectedJob(job);
+    const handleCardClick = (jobResume) => {
+        setSelectedJobResume(jobResume);
         setOpenModal(true);
     };
 
     const handleCloseModal = () => {
         setOpenModal(false);
-        setSelectedJob(null);
+        setSelectedJobResume(null);
     };
 
     // Function to handle drag and drop
@@ -82,23 +95,8 @@ export default function Dashboard() {
         });
     };
 
-    const getColumnColor = (status) => {
-        switch (status) {
-            case "applied":
-                return "bg-blue-100";
-            case "interviewing":
-                return "bg-yellow-100";
-            case "offer":
-                return "bg-green-100";
-            case "rejected":
-                return "bg-red-100";
-            case "interested":
-                return "bg-purple-100";
-            case "assessment":
-                return "bg-orange-100";
-            default:
-                return "bg-gray-100";
-        }
+    const getColumnColor = (status_id) => {
+        return JOB_APPLICATION_STATUS_COLOURS[status_id];
     };
 
     return (
@@ -117,20 +115,20 @@ export default function Dashboard() {
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-black">
                     {/* Render all sections in a 3-column grid */}
-                    {statuses.map((status) => (
-                        <Droppable key={status} droppableId={status}>
+                    {!isLoadingJobStatuses && jobStatuses.map((status) => (
+                        <Droppable key={status.status_id} droppableId={`${status.status_id}`}>
                             {(provided) => (
                                 <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className={`${getColumnColor(status)} p-4 rounded-lg w-full`}
+                                    className={`${getColumnColor(status.status_id)} p-4 rounded-lg w-full`}
                                 >
                                     <h2 className="text-lg font-semibold">
-                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                        {status.status_name.charAt(0).toUpperCase() + status.status_name.slice(1)}
                                     </h2>
                                     <div className="space-y-4 mt-4">
-                                        {data[status].map((job, index) => (
-                                            <Draggable key={job.id} draggableId={job.id} index={index}>
+                                        {data.filter(ele => ele.job.application_status === status.status_id).map((jobResume, index) => (
+                                            <Draggable key={jobResume.job_resume_id} draggableId={jobResume.job_resume_id} index={index}>
                                                 {(provided) => (
                                                     <div
                                                         ref={provided.innerRef}
@@ -138,32 +136,26 @@ export default function Dashboard() {
                                                         {...provided.dragHandleProps}
                                                         className="bg-white p-4 rounded-lg shadow-md relative"
                                                     >
-                                                        {/* Job score */}
-                                                        <div className="absolute top-2 right-2 font-bold px-2 py-1 rounded">
-                                                            <span className="text-blue-500 text-lg sm:text-xs md:text-sm lg:text-xl">
-                                                                {job.score}%
+                                                        <div className="flex justify-between items-center w-full">
+                                                        <h3 className="font-bold text-lg">
+                                                                {jobResume.job.job_title}
+                                                            </h3>
+                                                            <span className="font-bold rounded bg-blue-100 text-blue-500 text-lg p-1">
+                                                                {formatJobResumeScore(jobResume.job_resume_score)}%
                                                             </span>
                                                         </div>
 
-                                                        {/* Job title */}
-                                                        <h3
-                                                            className="font-bold text-lg mb-1 truncate"
-                                                            onClick={() => handleCardClick(job)}
-                                                        >
-                                                            {job.position}
-                                                        </h3>
-
                                                         {/* Company name */}
-                                                        <p className="text-sm text-gray-500 mb-2 truncate">{job.company}</p>
+                                                        <p className="text-sm text-gray-500 mb-2 truncate">{jobResume.job.company_name}</p>
 
                                                         {/* Resume version */}
                                                         <p className="text-sm text-gray-600 truncate">
-                                                            Used <span className="font-semibold">Resume 1</span>
+                                                            Used <span className="font-semibold">{jobResume.resume.resume_name}</span>
                                                         </p>
 
                                                         {/* Add button with icon in the bottom-right corner */}
                                                         <button
-                                                            onClick={() => handleCardClick(job)}
+                                                            onClick={() => handleCardClick(jobResume)}
                                                             className="absolute bottom-2 right-2 bg-gray-200 hover:bg-gray-300 p-1 rounded-full shadow-md"
                                                             title="View Details"
                                                         >
@@ -187,30 +179,40 @@ export default function Dashboard() {
                     <div className="w-1/2 border-r pr-8 overflow-auto">
                         <Card variant="outlined">
                             <CardContent>
-                                <Typography variant="subtitle1">
-                                    <strong>Resume 1</strong>
+                                <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                                    <strong>{selectedJobResume?.resume?.resume_name}</strong>
                                 </Typography>
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{RESUME_TEXT_1}</ReactMarkdown>
+                                {selectedJobResume?.resume?.ner_prediction
+                                    ? <NERRenderer
+                                        text={selectedJobResume?.resume?.resume_text}
+                                        entities={selectedJobResume?.resume?.ner_prediction} />
+                                    : <Typography>{selectedJobResume?.resume?.resume_text}</Typography>
+                                }
                             </CardContent>
                         </Card>
                     </div>
                     <div className="w-1/2 overflow-auto">
-                        <h3 className="font-bold text-2xl mb-4">{selectedJob?.position}</h3>
+                        <h3 className="font-bold text-2xl mb-4">{selectedJobResume?.job?.job_title}</h3>
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Job Link:</p>
-                            <a href={selectedJob?.link} target="_blank" className="text-blue-600">
-                                {selectedJob?.link}
+                            <a href={selectedJobResume?.job?.job_link} target="_blank" className="text-blue-600">
+                                {selectedJobResume?.job?.job_link}
                             </a>
                         </div>
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Company:</p>
-                            <p>{selectedJob?.company}</p>
+                            <p>{selectedJobResume?.job?.company_name}</p>
                             <p className="text-lg font-semibold mt-2">Status:</p>
-                            <p className="capitalize">{selectedJob?.status}</p>
+                            <p className="capitalize">{getJobStatusName(jobStatuses, selectedJobResume?.job?.application_status)}</p>
                         </div>
                         <div className="mb-4">
                             <p className="text-lg font-semibold">Job Description:</p>
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedJob?.jobDesc}</ReactMarkdown>
+                            {selectedJobResume?.job?.ner_prediction
+                                ? <NERRenderer
+                                    text={selectedJobResume?.job?.job_desc}
+                                    entities={selectedJobResume?.job?.ner_prediction} />
+                                : <Typography>{selectedJobResume?.job?.job_desc}</Typography>
+                            }
                         </div>
                     </div>
                 </DialogContent>
@@ -220,6 +222,28 @@ export default function Dashboard() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            {isLoadingData && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        zIndex: 1200,
+                        flexDirection: "column",
+                    }}
+                >
+                    <CircularProgress color="primary" sx={{ mb: 2 }} />
+                    <Typography variant="h6" color="white">
+                        Analysing...
+                    </Typography>
+                </Box>
+            )}
         </div>
     );
 }

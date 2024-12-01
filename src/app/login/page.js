@@ -22,17 +22,14 @@ export default function LoginPage() {
 
   const handleLogin = async (data) => {
     try {
-      // Hash the password before sending it to the backend
       const hashedPassword = await hashPassword(data.password);
       const loginData = { ...data, password: hashedPassword };
 
       const response = await login(loginData);
 
-      // Store tokens in localStorage
       localStorage.setItem('access_token', response.access_token);
 
-      // Redirect to resume page
-      router.push('/resume');
+      router.push('/dashboard');
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
         setErrorMessage(error.response.data.detail); // Show backend error message

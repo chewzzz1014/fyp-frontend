@@ -7,6 +7,7 @@ const NERRenderer = ({ text, entities }) => {
         let result = [];
         let cursor = 0;
 
+        entities = entities ?? [];
         entities.forEach((entity, index) => {
             if (cursor < entity.start) {
                 result.push(

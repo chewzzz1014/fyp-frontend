@@ -27,7 +27,6 @@ export default function SignUpPage() {
 
   const handleSignup = async (data) => {
     try {
-      // Hash the password before sending it to the backend
       const hashedPassword = await hashPassword(data.password);
       const signupData = { ...data, password: hashedPassword };
 
@@ -37,11 +36,10 @@ export default function SignUpPage() {
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
 
-      // Show success dialog
       setIsSuccessOpen(true);
       setTimeout(() => {
         router.push('/resume');
-      }, 3000);
+      }, 6000);
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
         setErrorMessage(error.response.data.detail);
