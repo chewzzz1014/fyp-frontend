@@ -14,15 +14,20 @@ import {
     CardContent,
     FormHelperText,
     Grid,
+    CircularProgress,
 } from "@mui/material";
-import { JOB_APPLICATION_STATUSES } from "../_constants/job";
 import { useRouter } from "next/navigation";
 import { getResumes } from "../_services/resume";
+import { addJobResume } from "../_services/job-resume";
+import { getJobStatuses } from "../_services/job";
 import NERRenderer from "../_components/ner-renderer";
 
 export default function JobResumePage() {
     const router = useRouter();
 
+    const [jobStatuses, setJobStatuses] = useState([]);
+    const [isLoadingJobStatuses, setILoadingJobStatuses] = useState(true);
+    const [jobStatusesError, setJobStatusesError] = useState("");
     const [uploadedResumes, setUploadedResumes] = useState([]);
     const [isLoadingResumes, setIsLoadingResumes] = useState(true);
     const [selectedResume, setSelectedResume] = useState(null);
@@ -30,7 +35,7 @@ export default function JobResumePage() {
         title: "",
         company: "",
         link: "",
-        applicationStatus: "Interested",
+        applicationStatus: 1,
         jobDesc: "",
     });
     const [resumeError, setResumeError] = useState("");
@@ -42,6 +47,8 @@ export default function JobResumePage() {
         applicationStatus: false,
         jobDesc: false,
     });
+    const [isLoadingResult, setIsLoadingResult] = useState(false);
+    const [analyseError, setAnalyseError] = useState("");
 
     useEffect(() => {
         const fetchResumes = async () => {
@@ -56,24 +63,40 @@ export default function JobResumePage() {
                 setIsLoadingResumes(false);
             }
         };
+        const fetchJobStatuses = async () => {
+            setILoadingJobStatuses(true);
+            try {
+                const response = await getJobStatuses();
+                console.log(response)
+                setJobStatuses(response);
+            } catch (error) {
+                setJobStatusesError("Failed to fetch job statuses")
+            } finally {
+                setILoadingJobStatuses(false);
+            }
+        };
         fetchResumes();
+        fetchJobStatuses();
     }, []);
 
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
         const resume = uploadedResumes.find((r) => r.resume_id === resumeId);
         setResumeError("");
+        setErrors({ ...errors, resume: false });
         setSelectedResume(resume);
+        setAnalyseError("");
     };
 
     // Handle job details input
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setJobDetails({ ...jobDetails, [name]: value });
+        setAnalyseError("");
     };
 
     // Handle form submission
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         // Validate all fields
@@ -88,9 +111,25 @@ export default function JobResumePage() {
 
         setErrors(newErrors);
 
-        // Only navigate if there are no validation errors
         if (Object.values(newErrors).every((error) => !error)) {
-            router.push("/job-resume/result");
+            try {
+                setIsLoadingResult(true);
+                const data = {
+                    resume_id: selectedResume.resume_id,
+                    job_title: jobDetails.title,
+                    job_link: jobDetails.link,
+                    company_name: jobDetails.company,
+                    application_status: jobDetails.applicationStatus,
+                    job_desc: jobDetails.jobDesc,
+                };
+                const newJobResume = await addJobResume(data);
+                console.log(newJobResume);
+                setIsLoadingResult(false);
+                router.push(`/job-resume/result?job_resume_id=${newJobResume.job_resume_id}`);
+            } catch (error) {
+                setIsLoadingResult(false);
+                setAnalyseError(error.message);
+            }
         }
     };
 
@@ -191,7 +230,7 @@ export default function JobResumePage() {
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth error={errors.applicationStatus} required>
+                            <FormControl fullWidth error={jobStatusesError || errors.applicationStatus} required>
                                 <InputLabel>Application Status</InputLabel>
                                 <Select
                                     name="applicationStatus"
@@ -199,12 +238,17 @@ export default function JobResumePage() {
                                     onChange={handleInputChange}
                                     label="Application Status"
                                 >
-                                    {JOB_APPLICATION_STATUSES.map((value, idx) => (
-                                        <MenuItem key={idx} value={value}>
-                                            {value}
+                                    {!isLoadingJobStatuses && jobStatuses.map((value) => (
+                                        <MenuItem key={value.status_id} value={value.status_id}>
+                                            {value.status_name}
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                {jobStatusesError && (
+                                    <FormHelperText sx={{ color: "error.main" }}>
+                                        Failed to fetch job statuses
+                                    </FormHelperText>
+                                )}
                                 {errors.applicationStatus && (
                                     <FormHelperText sx={{ color: "error.main" }}>
                                         Application status is required
@@ -232,6 +276,7 @@ export default function JobResumePage() {
                             />
                         </Grid>
                     </Grid>
+                    {analyseError && <FormHelperText error>{analyseError}</FormHelperText>}
                 </Box>
 
                 <Box textAlign="center">
@@ -240,6 +285,28 @@ export default function JobResumePage() {
                     </Button>
                 </Box>
             </form>
+            {isLoadingResult && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        zIndex: 1200,
+                        flexDirection: "column",
+                    }}
+                >
+                    <CircularProgress color="primary" sx={{ mb: 2 }} />
+                    <Typography variant="h6" color="white">
+                        Analysing...
+                    </Typography>
+                </Box>
+            )}
         </div>
     );
 }

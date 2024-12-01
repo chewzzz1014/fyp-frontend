@@ -16,9 +16,12 @@ import {
     DialogContent,
     DialogActions,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function JobResumeMatchingPage() {
+    const searchParams = useSearchParams();
+    const jobResumeId = searchParams.get("job_resume_id");
+
     // Sample data
     const resumeText = `John Doe is an experienced software engineer with expertise in developing scalable web applications. 
     He has proficiency in JavaScript, React, Node.js, and Python. Additionally, he holds certifications in cloud computing and DevOps.`;
@@ -56,6 +59,7 @@ export default function JobResumeMatchingPage() {
 
     return (
         <Box className="mx-4">
+            <h1>Job resume id: {jobResumeId}</h1>
             <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
 
             {/* Skills and Matching Score Section */}
