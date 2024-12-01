@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Box,
     Typography,
@@ -15,35 +15,35 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Snackbar,
+    Alert,
+    CircularProgress
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getJobResume } from "@/app/_services/job-resume";
+import NERRenderer from "@/app/_components/ner-renderer";
 
 export default function JobResumeMatchingPage() {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const jobResumeId = searchParams.get("job_resume_id");
 
-    // Sample data
-    const resumeText = `John Doe is an experienced software engineer with expertise in developing scalable web applications. 
-    He has proficiency in JavaScript, React, Node.js, and Python. Additionally, he holds certifications in cloud computing and DevOps.`;
-
-    const jobDescriptionText = `Looking for a software engineer to develop and maintain high-quality web applications. 
-    The candidate should be proficient in JavaScript, React, and have experience with REST APIs. 
-    Prior knowledge of Python and DevOps practices is a plus.`;
-
-    const resumeSkills = ["JavaScript", "React", "Node.js", "Python", "Cloud Computing", "DevOps"];
-    const jobSkills = ["JavaScript", "React", "REST APIs", "Python", "DevOps"];
-
-    // Placeholder for job-resume matching score
+    const [jobResumeId, setJobResumeId] = useState(searchParams.get("job_resume_id"));
+    const [jobResume, setJobResume] = useState(null);
+    const [error, setError] = useState("");
     const [matchingScore, setMatchingScore] = useState(0.00);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const router = useRouter();
 
-    // Simulate a job-resume matching function
-    const calculateMatchingScore = () => {
-        const overlap = resumeSkills.filter(skill => jobSkills.includes(skill)).length;
-        const score = Math.round((overlap / jobSkills.length) * 100); // Based on skill overlap
-        setMatchingScore(score);
-    };
+    useEffect(() => {
+        const fetchResumes = async () => {
+            try {
+                const response = await getJobResume(jobResumeId);
+                setJobResume(response);
+            } catch (error) {
+                setError("Failed to fetch job-resume");
+            }
+        };
+        fetchResumes();
+    }, [jobResumeId]);
 
     // Handle "Done" button click
     const handleDoneClick = () => {
@@ -57,76 +57,57 @@ export default function JobResumeMatchingPage() {
         router.push("/dashboard"); // Redirect to dashboard
     };
 
+    const formatJobResumeScore = (score) => {
+        return (Math.max(score, 0) * 100).toFixed(2);
+    }
+
+    if (error) {
+        return <div className="min-h-screen p-8">
+            <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
+                <Alert onClose={() => setError("")} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
+        </div>;
+    }
+
+    if (!jobResume) {
+        return (
+            <Box
+                sx={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    zIndex: 1200,
+                    flexDirection: "column",
+                }}
+            >
+                <CircularProgress color="primary" sx={{ mb: 2 }} />
+                <Typography variant="h6" color="white">
+                    Fetching data for you...
+                </Typography>
+            </Box>
+        );
+    }
+
+    const { resume, job, job_resume_score } = jobResume;
+    const resumeSkills = resume.ner_prediction ? resume.ner_prediction.filter(ele => ele.label === 'SKILL') : [];
+    const jobSkills = job.ner_prediction ? job.ner_prediction.filter(ele => ele.label === 'SKILL') : [];
+    console.log(jobResume)
+    const formattedJobResumeScore = formatJobResumeScore(job_resume_score);
+
     return (
-        <Box className="mx-4">
-            <h1>Job resume id: {jobResumeId}</h1>
-            <h1 className="text-3xl font-bold mb-8 mx-8">Resume</h1>
-
-            {/* Skills and Matching Score Section */}
-            <Paper elevation={3} sx={{ p: 3, mb: 4, mx: 4 }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h6" gutterBottom>
-                            Resume Skills
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {resumeSkills.map((skill, index) => (
-                                <Chip key={index} label={skill} color="primary" />
-                            ))}
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="h6" gutterBottom>
-                            Job Description Skills
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {jobSkills.map((skill, index) => (
-                                <Chip key={index} label={skill} color="secondary" />
-                            ))}
-                        </Box>
-                    </Grid>
-                </Grid>
-
-                <Divider sx={{ my: 3 }} />
-
-                <Box textAlign="center">
-                    {matchingScore !== null && (
-                        <Typography variant="h6" mt={2}>
-                            Matching Score: {matchingScore}%
-                        </Typography>
-                    )}
-                </Box>
-            </Paper>
-
-            {/* Resume and Job Description Section */}
-            <Grid container spacing={4} sx={{ mx: 4 }}>
-                {/* Resume Section */}
-                <Grid item xs={12} md={6}>
-                    <Card variant="outlined">
-                        <CardContent>
-                            <Typography variant="h5" gutterBottom>
-                                Resume
-                            </Typography>
-                            <Typography>{resumeText}</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-
-                {/* Job Description Section */}
-                <Grid item xs={12} md={6}>
-                    <Card variant="outlined">
-                        <CardContent>
-                            <Typography variant="h5" gutterBottom>
-                                Job Description
-                            </Typography>
-                            <Typography>{jobDescriptionText}</Typography>
-                        </CardContent>
-                    </Card>
-                </Grid>
-            </Grid>
-
-            {/* Done Button */}
-            <Box textAlign="center" mt={4}>
+        <div className="min-h-screen p-8">
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 4, mx: 4 }}>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    Resume
+                </Typography>
                 <Button
                     variant="contained"
                     color="primary"
@@ -136,7 +117,84 @@ export default function JobResumeMatchingPage() {
                 </Button>
             </Box>
 
-            {/* Success Popup Dialog */}
+            {/* Skills and Matching Score Section */}
+            <Paper elevation={3} sx={{ pb: 4, mb: 2, mx: 4 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6" gutterBottom>
+                            Resume Skills
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {resumeSkills.map((skill, index) => (
+                                <Chip key={index} label={skill.text} color="primary" />
+                            ))}
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6" gutterBottom>
+                            Job Skills
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                            {jobSkills.map((skill, index) => (
+                                <Chip key={index} label={skill.text} color="secondary" />
+                            ))}
+                        </Box>
+                    </Grid>
+                </Grid>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Box textAlign="center">
+                    {matchingScore !== null && (
+                        <Typography variant="h6">
+                            Matching Score: {formattedJobResumeScore}%
+                        </Typography>
+                    )}
+                </Box>
+            </Paper>
+
+            <Box sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                gap: "8px",
+                padding: "10px",
+                p: 3,
+            }}>
+                {/* Resume Section */}
+                <Grid item xs={12} md={6} sx={{ flex: "1" }}>
+                    <Card variant="outlined">
+                        <CardContent>
+                            <Typography variant="h5" gutterBottom>
+                                Resume
+                            </Typography>
+                            {resume.ner_prediction
+                                ? <NERRenderer
+                                    text={resume.resume_text}
+                                    entities={resume.ner_prediction} />
+                                : <Typography>{resume.resume_text}</Typography>
+                            }
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* Job Description Section */}
+                <Grid item xs={12} md={6} sx={{ flex: "1" }}>
+                    <Card variant="outlined">
+                        <CardContent>
+                            <Typography variant="h5" gutterBottom>
+                                Job Description
+                            </Typography>
+                            {job.ner_prediction
+                                ? <NERRenderer
+                                    text={job.job_desc}
+                                    entities={job.ner_prediction} />
+                                : <Typography>{job.job_desc}</Typography>
+                            }
+                        </CardContent>
+                    </Card>
+                </Grid>
+            </Box>
+
             <Dialog
                 open={isDialogOpen}
                 onClose={handleDialogClose}
@@ -154,6 +212,6 @@ export default function JobResumeMatchingPage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </Box>
+        </div>
     );
 }
