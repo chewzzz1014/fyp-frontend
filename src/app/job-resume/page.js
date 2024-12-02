@@ -18,19 +18,30 @@ import {
 import { useRouter } from "next/navigation";
 import { getResumes } from "../_services/resume";
 import { addJobResume } from "../_services/job-resume";
-import { getJobStatuses } from "../_services/job";
+import { getJobStatuses, getAllJobs } from "../_services/job";
 import NERRenderer from "../_components/ner-renderer";
 import Loading from "../_components/loading";
 
 export default function JobResumePage() {
     const router = useRouter();
 
+    // job statuses
     const [jobStatuses, setJobStatuses] = useState([]);
     const [isLoadingJobStatuses, setILoadingJobStatuses] = useState(true);
     const [jobStatusesError, setJobStatusesError] = useState("");
+    // uploaded resumes
     const [uploadedResumes, setUploadedResumes] = useState([]);
     const [isLoadingResumes, setIsLoadingResumes] = useState(true);
+    const [resumeError, setResumeError] = useState("");
+    // uploaded jobs
+    const [uploadedJobs, setUploadedJobs] = useState([]);
+    const [isLoadingJobs, setIsLoadingJobs] = useState(true);
+    const [jobsError, setJobsError] = useState("");
+    // selected resume
     const [selectedResume, setSelectedResume] = useState(null);
+    // selected job
+    const [selectedJob, setSelectedJob] = useState(null);
+    // job detail fields
     const [jobDetails, setJobDetails] = useState({
         title: "",
         company: "",
@@ -38,7 +49,6 @@ export default function JobResumePage() {
         applicationStatus: 1,
         jobDesc: "",
     });
-    const [resumeError, setResumeError] = useState("");
     const [errors, setErrors] = useState({
         resume: false,
         title: false,
@@ -47,6 +57,7 @@ export default function JobResumePage() {
         applicationStatus: false,
         jobDesc: false,
     });
+    // job-resume matching result
     const [isLoadingResult, setIsLoadingResult] = useState(false);
     const [analyseError, setAnalyseError] = useState("");
 
@@ -63,6 +74,18 @@ export default function JobResumePage() {
                 setIsLoadingResumes(false);
             }
         };
+        const fetchJobs = async () => {
+            setIsLoadingJobs(true);
+            try {
+                const response = await getAllJobs();
+                console.log(response)
+                setUploadedJobs(response);
+            } catch (error) {
+                setJobsError("Failed to fetch jobs");
+            } finally {
+                setIsLoadingJobs(false);
+            }
+        };
         const fetchJobStatuses = async () => {
             setILoadingJobStatuses(true);
             try {
@@ -76,8 +99,39 @@ export default function JobResumePage() {
             }
         };
         fetchResumes();
+        fetchJobs();
         fetchJobStatuses();
     }, []);
+
+    const handleJobChange = (event) => {
+        const jobId = event.target.value;
+
+        if (jobId === -1) {
+            const updatedJobDetails = {
+                title: "",
+                company: "",
+                link: "",
+                applicationStatus: 1,
+                jobDesc: "",
+            };
+            setJobsError("");
+            setJobDetails(updatedJobDetails);
+            setSelectedJob(null);
+            return;
+        }
+        const job = uploadedJobs.find((j) => j.job_id === jobId);
+        const updatedJobDetails = {
+            title: job.job_title,
+            company: job.company_name,
+            link: job.job_link,
+            applicationStatus: job.application_status,
+            jobDesc: job.job_desc,
+        };
+
+        setJobsError("");
+        setJobDetails(updatedJobDetails);
+        setSelectedJob(job);
+    };
 
     const handleResumeChange = (event) => {
         const resumeId = event.target.value;
@@ -115,6 +169,7 @@ export default function JobResumePage() {
             try {
                 setIsLoadingResult(true);
                 const data = {
+                    job_id: selectedJob ? selectedJob.job_id : null,
                     resume_id: selectedResume.resume_id,
                     job_title: jobDetails.title,
                     job_link: jobDetails.link,
@@ -187,8 +242,23 @@ export default function JobResumePage() {
                     <Typography variant="h5" gutterBottom>
                         Job Details
                     </Typography>
+                    <FormControl fullWidth sx={{ mr: 2, mb: 2 }} error={jobsError}>
+                        <InputLabel>Select a Job (Optional)</InputLabel>
+                        <Select
+                            value={selectedJob ? selectedJob.job_id : -1}
+                            onChange={handleJobChange}
+                            label="Select a Job"
+                        >
+                            <MenuItem value={-1}>Add a new job</MenuItem>
+                            {!isLoadingJobs && uploadedJobs.map((job) => (
+                                <MenuItem key={job.job_id} value={job.job_id}>
+                                    {job.job_title}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
                     {/* First Row: Job Title and Job Link */}
-                    <Grid container spacing={2}>
+                    <Grid container sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Job Title"
@@ -199,6 +269,7 @@ export default function JobResumePage() {
                                 required
                                 error={errors.title}
                                 helperText={errors.title && "Job title is required"}
+                                disabled={selectedJob}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -211,12 +282,13 @@ export default function JobResumePage() {
                                 required
                                 error={errors.link}
                                 helperText={errors.link && "Job link is required"}
+                                disabled={selectedJob}
                             />
                         </Grid>
                     </Grid>
 
                     {/* Second Row: Company and Application Status */}
-                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid container sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Company"
@@ -227,6 +299,7 @@ export default function JobResumePage() {
                                 required
                                 error={errors.company}
                                 helperText={errors.company && "Company is required"}
+                                disabled={selectedJob}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -237,6 +310,7 @@ export default function JobResumePage() {
                                     value={jobDetails.applicationStatus}
                                     onChange={handleInputChange}
                                     label="Application Status"
+                                    disabled={selectedJob}
                                 >
                                     {!isLoadingJobStatuses && jobStatuses.map((value) => (
                                         <MenuItem key={value.status_id} value={value.status_id}>
@@ -260,7 +334,7 @@ export default function JobResumePage() {
                     </Grid>
 
                     {/* Third Row: Job Description */}
-                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid sx={{ mb: 2 }}>
                         <Grid item xs={12}>
                             <TextField
                                 label="Job Description"
@@ -269,10 +343,15 @@ export default function JobResumePage() {
                                 onChange={handleInputChange}
                                 fullWidth
                                 multiline
-                                rows={4}
+                                minRows={4} // Minimum number of rows
+                                maxRows={10} // Maximum number of rows before scroll appears
                                 required
                                 error={errors.jobDesc}
                                 helperText={errors.jobDesc && "Job description is required"}
+                                disabled={selectedJob}
+                                InputProps={{
+                                    style: { overflow: "auto" },
+                                }}
                             />
                         </Grid>
                     </Grid>
@@ -285,7 +364,7 @@ export default function JobResumePage() {
                     </Button>
                 </Box>
             </form>
-            {isLoadingResult && <Loading text="Analysing..." /> }
+            {isLoadingResult && <Loading text="Analysing..." />}
         </div>
     );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { login } from '../_services/auth';
 import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
+import { ThemeSwitcher } from '@toolpad/core/DashboardLayout';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -63,7 +64,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="absolute top-4 right-4">
+        <ThemeSwitcher />
+      </div>
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
         <h1 className="text-2xl font-semibold">Login</h1>
 
@@ -76,7 +80,7 @@ export default function LoginPage() {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border border-gray-300 p-2 rounded-md text-black"
+              className="border border-gray-300 p-2 rounded-md"
               placeholder="Enter your email"
             />
           </div>
@@ -88,7 +92,7 @@ export default function LoginPage() {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border border-gray-300 p-2 rounded-md text-black"
+              className="border border-gray-300 p-2 rounded-md"
               placeholder="Enter your password"
             />
           </div>

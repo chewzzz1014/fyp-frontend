@@ -138,9 +138,9 @@ export default function JobResumeMatchingPage() {
             }}>
                 {/* Resume Section */}
                 <Grid item xs={12} md={6} sx={{ flex: "1" }}>
-                    <Card variant="outlined">
+                    <Card variant="outlined" sx={{ backgroundColor: "#F5F5F5" }}>
                         <CardContent>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" gutterBottom className="text-black">
                                 Resume
                             </Typography>
                             {resume.ner_prediction
@@ -155,9 +155,9 @@ export default function JobResumeMatchingPage() {
 
                 {/* Job Description Section */}
                 <Grid item xs={12} md={6} sx={{ flex: "1" }}>
-                    <Card variant="outlined">
+                    <Card variant="outlined" sx={{ backgroundColor: "#F5F5F5" }}>
                         <CardContent>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" gutterBottom className="text-black">
                                 Job Description
                             </Typography>
                             {job.ner_prediction

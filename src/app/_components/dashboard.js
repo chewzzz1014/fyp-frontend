@@ -210,7 +210,7 @@ export default function Dashboard() {
                 selectedJobResume={selectedJobResume}
                 jobStatuses={jobStatuses}
             />
-            {isLoadingData && <Loading text="Analysing..." />}
+            {isLoadingData && <Loading text="Fetching data..." />}
         </div>
     );
 }
