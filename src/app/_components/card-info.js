@@ -41,7 +41,7 @@ export default function CardInfo({ openModal, handleCloseModal, selectedJobResum
                     <p className="text-lg font-semibold">Company:</p>
                     <p>{selectedJobResume?.job?.company_name}</p>
                     <p className="text-lg font-semibold mt-2">Status:</p>
-                    <Chip className="capitalize" label={getJobStatusName(jobStatuses, selectedJobResume?.job?.application_status)} color="primary" />
+                    <Chip className="capitalize" label={getJobStatusName(jobStatuses, selectedJobResume?.application_status)} color="primary" />
                 </div>
                 <div className="mb-4">
                     <p className="text-lg font-semibold">Job Description:</p>

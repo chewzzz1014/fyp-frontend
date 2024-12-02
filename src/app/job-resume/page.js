@@ -177,6 +177,7 @@ export default function JobResumePage() {
                     application_status: jobDetails.applicationStatus,
                     job_desc: jobDetails.jobDesc,
                 };
+                console.log(data)
                 const newJobResume = await addJobResume(data);
                 console.log(newJobResume);
                 setIsLoadingResult(false);
@@ -237,6 +238,37 @@ export default function JobResumePage() {
                     )}
                 </Box>
 
+                <Box mb={4} sx={{ mx: 4 }}>
+                    <Typography variant="h5" gutterBottom>
+                        Job Application Status
+                    </Typography>
+                    <FormControl fullWidth error={jobStatusesError || errors.applicationStatus} required>
+                        <InputLabel>Application Status</InputLabel>
+                        <Select
+                            name="applicationStatus"
+                            value={jobDetails.applicationStatus}
+                            onChange={handleInputChange}
+                            label="Application Status"
+                        >
+                            {!isLoadingJobStatuses && jobStatuses.map((value) => (
+                                <MenuItem key={value.status_id} value={value.status_id}>
+                                    {value.status_name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {jobStatusesError && (
+                            <FormHelperText sx={{ color: "error.main" }}>
+                                Failed to fetch job statuses
+                            </FormHelperText>
+                        )}
+                        {errors.applicationStatus && (
+                            <FormHelperText sx={{ color: "error.main" }}>
+                                Application status is required
+                            </FormHelperText>
+                        )}
+                    </FormControl>
+                </Box>
+
                 {/* Job Section */}
                 <Box mb={4} sx={{ mx: 4 }}>
                     <Typography variant="h5" gutterBottom>
@@ -274,23 +306,6 @@ export default function JobResumePage() {
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                label="Job Link"
-                                name="link"
-                                value={jobDetails.link}
-                                onChange={handleInputChange}
-                                fullWidth
-                                required
-                                error={errors.link}
-                                helperText={errors.link && "Job link is required"}
-                                disabled={selectedJob}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    {/* Second Row: Company and Application Status */}
-                    <Grid container sx={{ mb: 2 }}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
                                 label="Company"
                                 name="company"
                                 value={jobDetails.company}
@@ -302,34 +317,22 @@ export default function JobResumePage() {
                                 disabled={selectedJob}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth error={jobStatusesError || errors.applicationStatus} required>
-                                <InputLabel>Application Status</InputLabel>
-                                <Select
-                                    name="applicationStatus"
-                                    value={jobDetails.applicationStatus}
-                                    onChange={handleInputChange}
-                                    label="Application Status"
-                                    disabled={selectedJob}
-                                >
-                                    {!isLoadingJobStatuses && jobStatuses.map((value) => (
-                                        <MenuItem key={value.status_id} value={value.status_id}>
-                                            {value.status_name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                                {jobStatusesError && (
-                                    <FormHelperText sx={{ color: "error.main" }}>
-                                        Failed to fetch job statuses
-                                    </FormHelperText>
-                                )}
-                                {errors.applicationStatus && (
-                                    <FormHelperText sx={{ color: "error.main" }}>
-                                        Application status is required
-                                    </FormHelperText>
-                                )}
-                            </FormControl>
+                    </Grid>
 
+                    {/* Second Row: Company and Application Status */}
+                    <Grid container sx={{ mb: 2 }}>
+                        <Grid item xs={12} sm={12}>
+                            <TextField
+                                label="Job Link"
+                                name="link"
+                                value={jobDetails.link}
+                                onChange={handleInputChange}
+                                fullWidth
+                                required
+                                error={errors.link}
+                                helperText={errors.link && "Job link is required"}
+                                disabled={selectedJob}
+                            />
                         </Grid>
                     </Grid>
 

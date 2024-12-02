@@ -33,7 +33,7 @@ export default function LoginPage() {
       router.push('/dashboard');
     } catch (error) {
       if (error.response && error.response.data && error.response.data.detail) {
-        setErrorMessage(error.response.data.detail); // Show backend error message
+        setErrorMessage(error.response.data.detail);
       } else {
         setErrorMessage('An unexpected error occurred. Please try again later.');
       }

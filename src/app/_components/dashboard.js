@@ -11,7 +11,8 @@ import {
 import ExploreIcon from '@mui/icons-material/Explore';
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
-import { getJobStatuses, updateJobApplicationStatus } from "../_services/job";
+import { getJobStatuses } from "../_services/job";
+import { updateJobApplicationStatus } from "../_services/job-resume";
 import { formatJobResumeScore, getColumnColor } from "@/app/_utils/job-resume";
 import CardInfo from "./card-info";
 import Loading from "./loading";
@@ -89,14 +90,14 @@ export default function Dashboard() {
         }
 
         // Get the source and destination job resumes
-        const sourceItems = data.filter(jobResume => jobResume.job.application_status === sourceStatusId);
-        const destinationItems = data.filter(jobResume => jobResume.job.application_status === destinationStatusId);
+        const sourceItems = data.filter(jobResume => jobResume.application_status === sourceStatusId);
+        const destinationItems = data.filter(jobResume => jobResume.application_status === destinationStatusId);
 
         // Extract the moved item from the source
         const [movedItem] = sourceItems.splice(source.index, 1);
 
         // Update the application status of the moved item
-        movedItem.job.application_status = destinationStatusId;
+        movedItem.application_status = destinationStatusId;
 
         // Insert the moved item into the destination
         destinationItems.splice(destination.index, 0, movedItem);
@@ -113,8 +114,8 @@ export default function Dashboard() {
 
         try {
             await updateJobApplicationStatus({
-                job_id: movedItem.job.job_id,
-                new_status: movedItem.job.application_status
+                job_resume_id: movedItem.job_resume_id,
+                new_status: movedItem.application_status
             })
         } catch (error) {
             setError("Failed to update job application status in database");
@@ -157,7 +158,7 @@ export default function Dashboard() {
                                         {status.status_name.charAt(0).toUpperCase() + status.status_name.slice(1)}
                                     </h2>
                                     <div className="space-y-4 mt-4">
-                                        {data.filter(ele => ele.job.application_status === status.status_id).map((jobResume, index) => (
+                                        {data.filter(ele => ele.application_status === status.status_id).map((jobResume, index) => (
                                             <Draggable key={jobResume.job_resume_id} draggableId={`${jobResume.job_resume_id}`} index={index}>
                                                 {(provided) => (
                                                     <div
