@@ -2,8 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import {
-    Box,
-    Typography,
     Snackbar,
     Alert
 } from "@mui/material";

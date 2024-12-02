@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
     Button,
+    Snackbar,
+    Alert
 } from "@mui/material";
-import AnalyticsIcon from '@mui/icons-material/Analytics';
+import ExploreIcon from '@mui/icons-material/Explore';
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
-import { getJobStatuses } from "../_services/job";
-import { JOB_APPLICATION_STATUS_COLOURS } from "../_constants/job";
-import { formatJobResumeScore } from "@/app/_utils/job-resume";
+import { getJobStatuses, updateJobApplicationStatus } from "../_services/job";
+import { formatJobResumeScore, getColumnColor } from "@/app/_utils/job-resume";
 import CardInfo from "./card-info";
 import Loading from "./loading";
 
@@ -56,7 +57,7 @@ export default function Dashboard() {
     }, []);
 
     const handleExploreNowClick = () => {
-        router.push("/job-resume"); // Replace with your target page path
+        router.push("/job-resume");
     };
 
     const handleCardClick = (jobResume) => {
@@ -69,38 +70,78 @@ export default function Dashboard() {
         setSelectedJobResume(null);
     };
 
-    // Function to handle drag and drop
-    const onDragEnd = (result) => {
-        const { destination, source, draggableId } = result;
+    const onDragEnd = async (result) => {
+        console.log(result)
+        const { destination, source } = result;
 
+        console.log('source', source);
+        console.log('destination', destination);
+        console.log('data', data);
+
+        // If no destination, exit
         if (!destination) return;
+
+        // If the item is dropped back in the same position, exit
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-        const start = [...data[source.droppableId]];
-        const end = [...data[destination.droppableId]];
+        // Parse droppableId to find the source and destination statuses
+        const sourceStatusId = parseInt(source.droppableId, 10);
+        const destinationStatusId = parseInt(destination.droppableId, 10);
 
-        const [movedCard] = start.splice(source.index, 1);
-        end.splice(destination.index, 0, movedCard);
+        if (isNaN(sourceStatusId) || isNaN(destinationStatusId)) {
+            console.error('Invalid droppableId:', source.droppableId, destination.droppableId);
+            return;
+        }
 
-        setData({
-            ...data,
-            [source.droppableId]: start,
-            [destination.droppableId]: end,
+        // Get the source and destination job resumes
+        const sourceItems = data.filter(jobResume => jobResume.job.application_status === sourceStatusId);
+        const destinationItems = data.filter(jobResume => jobResume.job.application_status === destinationStatusId);
+
+        // Extract the moved item from the source
+        const [movedItem] = sourceItems.splice(source.index, 1);
+
+        // Update the application status of the moved item
+        movedItem.job.application_status = destinationStatusId;
+
+        // Insert the moved item into the destination
+        destinationItems.splice(destination.index, 0, movedItem);
+
+        // Update the main data array
+        const updatedData = data.map(jobResume => {
+            if (jobResume.job_resume_id === movedItem.job_resume_id) {
+                return movedItem; // Replace with the updated item
+            }
+            return jobResume;
         });
-    };
 
-    const getColumnColor = (status_id) => {
-        return JOB_APPLICATION_STATUS_COLOURS[status_id];
+        setData(updatedData);
+
+        try {
+            await updateJobApplicationStatus({
+                job_id: movedItem.job.job_id,
+                new_status: movedItem.job.application_status
+            })
+        } catch (error) {
+            setError("Failed to update job application status in database");
+        }
     };
 
     return (
         <div className="min-h-screen p-8">
+            {
+                error &&
+                <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
+                    <Alert onClose={() => setError("")} severity="error">
+                        {error}
+                    </Alert>
+                </Snackbar>
+            }
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Job Application Status</h1>
                 <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<AnalyticsIcon />}
+                    startIcon={<ExploreIcon />}
                     onClick={handleExploreNowClick}
                 >
                     Explore Now
@@ -115,14 +156,14 @@ export default function Dashboard() {
                                 <div
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
-                                    className={`${getColumnColor(status.status_id)} p-4 rounded-lg w-full`}
+                                    className={`${getColumnColor(status.status_id - 1)} p-4 rounded-lg w-full`}
                                 >
                                     <h2 className="text-lg font-semibold">
                                         {status.status_name.charAt(0).toUpperCase() + status.status_name.slice(1)}
                                     </h2>
                                     <div className="space-y-4 mt-4">
                                         {data.filter(ele => ele.job.application_status === status.status_id).map((jobResume, index) => (
-                                            <Draggable key={jobResume.job_resume_id} draggableId={jobResume.job_resume_id} index={index}>
+                                            <Draggable key={jobResume.job_resume_id} draggableId={`${jobResume.job_resume_id}`} index={index}>
                                                 {(provided) => (
                                                     <div
                                                         ref={provided.innerRef}
@@ -131,7 +172,7 @@ export default function Dashboard() {
                                                         className="bg-white p-4 rounded-lg shadow-md relative"
                                                     >
                                                         <div className="flex justify-between items-center w-full">
-                                                        <h3 className="font-bold text-lg">
+                                                            <h3 className="font-bold text-lg">
                                                                 {jobResume.job.job_title}
                                                             </h3>
                                                             <span className="font-bold rounded bg-blue-100 text-blue-500 text-lg p-1">
@@ -168,13 +209,13 @@ export default function Dashboard() {
                 </div>
             </DragDropContext>
 
-            <CardInfo 
+            <CardInfo
                 openModal={openModal}
                 handleCloseModal={handleCloseModal}
                 selectedJobResume={selectedJobResume}
                 jobStatuses={jobStatuses}
             />
-            {isLoadingData && <Loading text="Analysing..." /> }
+            {isLoadingData && <Loading text="Analysing..." />}
         </div>
     );
 }
