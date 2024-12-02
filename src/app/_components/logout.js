@@ -9,9 +9,9 @@ import {
     Button,
     Box,
     Stack,
-    IconButton
+    IconButton,
+    Tooltip
 } from "@mui/material";
-import { useColorScheme } from '@mui/material/styles';
 import { ThemeSwitcher } from '@toolpad/core/DashboardLayout';
 import LogoutIcon from '@mui/icons-material/Logout';
 
@@ -32,9 +32,11 @@ export default function LogoutButton() {
             <Stack direction="row">
                 <ThemeSwitcher />
                 <div>
-                    <IconButton type="button" aria-label="settings" onClick={toggleMenu}>
-                        <LogoutIcon />
-                    </IconButton>
+                    <Tooltip title="Logout" arrow placement="bottom">
+                        <IconButton type="button" aria-label="settings" onClick={toggleMenu}>
+                            <LogoutIcon />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             </Stack>
             {
