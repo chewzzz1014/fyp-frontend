@@ -71,12 +71,7 @@ export default function Dashboard() {
     };
 
     const onDragEnd = async (result) => {
-        console.log(result)
         const { destination, source } = result;
-
-        console.log('source', source);
-        console.log('destination', destination);
-        console.log('data', data);
 
         // If no destination, exit
         if (!destination) return;

@@ -60,6 +60,7 @@ export default function LogoutButton() {
                         sx={{
                             "& .MuiDialog-paper": {
                                 maxWidth: "500px",
+                                padding: "10px"
                             },
                         }}
                     >

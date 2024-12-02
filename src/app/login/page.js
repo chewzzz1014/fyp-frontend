@@ -97,9 +97,13 @@ export default function LoginPage() {
             <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
           )}
 
-          <button type="submit" className="rounded-full border border-solid border-transparent bg-foreground text-background h-10 sm:h-12 px-4 sm:px-5 mt-4 text-sm sm:text-base">
+          <button
+            type="submit"
+            className="rounded-full border border-solid border-transparent bg-[#1976d2] text-white h-10 sm:h-12 px-4 sm:px-5 mt-4 text-sm sm:text-base"
+          >
             Login
           </button>
+
         </form>
 
         <p className="mt-4 text-sm">

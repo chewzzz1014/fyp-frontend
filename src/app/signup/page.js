@@ -74,7 +74,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start w-1/3 mx-auto">
         <h1 className="text-2xl font-semibold">Sign Up</h1>
 
@@ -135,7 +135,10 @@ export default function SignUpPage() {
             <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
           )}
 
-          <button type="submit" className="rounded-full border border-solid border-transparent bg-foreground text-background h-10 sm:h-12 px-4 sm:px-5 mt-4 text-sm sm:text-base">
+          <button
+            type="submit"
+            className="rounded-full border border-solid border-transparent bg-[#1976d2] text-white h-10 sm:h-12 px-4 sm:px-5 mt-4 text-sm sm:text-base"
+          >
             Sign Up
           </button>
         </form>
