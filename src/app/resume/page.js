@@ -18,13 +18,13 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    CircularProgress,
     Snackbar,
     Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { uploadResume, getResumes } from "../_services/resume";
 import NERRenderer from "../_components/ner-renderer";
+import Loading from "../_components/loading";
 
 export default function ResumePage() {
     const PDF_MAX_SIZE = 200 * 1024; // 200 KB
@@ -200,28 +200,7 @@ export default function ResumePage() {
                     </Button>
                 </DialogActions>
             </Dialog>
-            {isLoadingSubmit && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        zIndex: 1200,
-                        flexDirection: "column",
-                    }}
-                >
-                    <CircularProgress color="primary" sx={{ mb: 2 }} />
-                    <Typography variant="h6" color="white">
-                        Analyzing your resume...
-                    </Typography>
-                </Box>
-            )}
+            {isLoadingSubmit && <Loading text="Analyzing your resume..." />}
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
                 <Alert onClose={() => setError("")} severity="error">
                     {error}

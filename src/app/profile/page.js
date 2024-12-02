@@ -5,10 +5,11 @@ import {
     Box,
     Typography,
     Snackbar,
-    Alert,
-    CircularProgress
+    Alert
 } from "@mui/material";
 import { getProfile } from "../_services/profile";
+import { formatDate } from "../_utils/profile";
+import Loading from "../_components/loading";
 
 export default function ProfilePage() {
     const [error, setError] = useState("");
@@ -26,8 +27,6 @@ export default function ProfilePage() {
         fetchResumes();
     }, []);
 
-    const formatDate = (date) => new Date(date).toLocaleString();
-
     if (error) {
         return <div className="min-h-screen p-8">
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
@@ -39,28 +38,7 @@ export default function ProfilePage() {
     }
 
     if (!profile) {
-        return (
-            <Box
-                sx={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1200,
-                    flexDirection: "column",
-                }}
-            >
-                <CircularProgress color="primary" sx={{ mb: 2 }} />
-                <Typography variant="h6" color="white">
-                    Fetching data for you...
-                </Typography>
-            </Box>
-        );
+        return <Loading text="Fetching data for you..." />;
     }
 
     return (
@@ -81,12 +59,12 @@ export default function ProfilePage() {
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Registered on</td>
-                            <td className="py-2 w-2/3">{new Date(profile.created_at).toLocaleString()}</td>
+                            <td className="py-2 w-2/3">{formatDate(profile.created_at)}</td>
                         </tr>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Last login</td>
                             <td className="py-2 w-2/3">{profile.last_login
-                                ? new Date(profile.last_login).toLocaleString() : new Date(profile.created_at).toLocaleString()}
+                                ? formatDate(profile.last_login) : formatDate(profile.created_at)}
                             </td>
                         </tr>
                     </tbody>

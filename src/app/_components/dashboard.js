@@ -5,21 +5,15 @@ import { useRouter } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import {
     Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    Card,
-    CardContent,
-    Typography,
-    CircularProgress,
-    Box
 } from "@mui/material";
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
 import { getJobStatuses } from "../_services/job";
 import { JOB_APPLICATION_STATUS_COLOURS } from "../_constants/job";
-import { formatJobResumeScore, getJobStatusName } from "@/app/_utils/job-resume";
-import NERRenderer from "./ner-renderer";
+import { formatJobResumeScore } from "@/app/_utils/job-resume";
+import CardInfo from "./card-info";
+import Loading from "./loading";
 
 export default function Dashboard() {
     const router = useRouter();
@@ -106,7 +100,7 @@ export default function Dashboard() {
                 <Button
                     variant="contained"
                     color="primary"
-                    startIcon={<RocketLaunchIcon />}
+                    startIcon={<AnalyticsIcon />}
                     onClick={handleExploreNowClick}
                 >
                     Explore Now
@@ -174,76 +168,13 @@ export default function Dashboard() {
                 </div>
             </DragDropContext>
 
-            <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg" fullWidth>
-                <DialogContent className="flex gap-8">
-                    <div className="w-1/2 border-r pr-8 overflow-auto">
-                        <Card variant="outlined">
-                            <CardContent>
-                                <Typography variant="subtitle1" sx={{ mb: 2 }}>
-                                    <strong>{selectedJobResume?.resume?.resume_name}</strong>
-                                </Typography>
-                                {selectedJobResume?.resume?.ner_prediction
-                                    ? <NERRenderer
-                                        text={selectedJobResume?.resume?.resume_text}
-                                        entities={selectedJobResume?.resume?.ner_prediction} />
-                                    : <Typography>{selectedJobResume?.resume?.resume_text}</Typography>
-                                }
-                            </CardContent>
-                        </Card>
-                    </div>
-                    <div className="w-1/2 overflow-auto">
-                        <h3 className="font-bold text-2xl mb-4">{selectedJobResume?.job?.job_title}</h3>
-                        <div className="mb-4">
-                            <p className="text-lg font-semibold">Job Link:</p>
-                            <a href={selectedJobResume?.job?.job_link} target="_blank" className="text-blue-600">
-                                {selectedJobResume?.job?.job_link}
-                            </a>
-                        </div>
-                        <div className="mb-4">
-                            <p className="text-lg font-semibold">Company:</p>
-                            <p>{selectedJobResume?.job?.company_name}</p>
-                            <p className="text-lg font-semibold mt-2">Status:</p>
-                            <p className="capitalize">{getJobStatusName(jobStatuses, selectedJobResume?.job?.application_status)}</p>
-                        </div>
-                        <div className="mb-4">
-                            <p className="text-lg font-semibold">Job Description:</p>
-                            {selectedJobResume?.job?.ner_prediction
-                                ? <NERRenderer
-                                    text={selectedJobResume?.job?.job_desc}
-                                    entities={selectedJobResume?.job?.ner_prediction} />
-                                : <Typography>{selectedJobResume?.job?.job_desc}</Typography>
-                            }
-                        </div>
-                    </div>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal} color="primary">
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-            {isLoadingData && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        zIndex: 1200,
-                        flexDirection: "column",
-                    }}
-                >
-                    <CircularProgress color="primary" sx={{ mb: 2 }} />
-                    <Typography variant="h6" color="white">
-                        Analysing...
-                    </Typography>
-                </Box>
-            )}
+            <CardInfo 
+                openModal={openModal}
+                handleCloseModal={handleCloseModal}
+                selectedJobResume={selectedJobResume}
+                jobStatuses={jobStatuses}
+            />
+            {isLoadingData && <Loading text="Analysing..." /> }
         </div>
     );
 }

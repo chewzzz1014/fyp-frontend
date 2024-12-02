@@ -17,12 +17,12 @@ import {
     DialogActions,
     Snackbar,
     Alert,
-    CircularProgress
 } from "@mui/material";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getJobResume } from "@/app/_services/job-resume";
 import { formatJobResumeScore } from "@/app/_utils/job-resume";
 import NERRenderer from "@/app/_components/ner-renderer";
+import Loading from "@/app/_components/loading";
 
 export default function JobResumeMatchingPage() {
     const router = useRouter();
@@ -69,28 +69,7 @@ export default function JobResumeMatchingPage() {
     }
 
     if (!jobResume) {
-        return (
-            <Box
-                sx={{
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    zIndex: 1200,
-                    flexDirection: "column",
-                }}
-            >
-                <CircularProgress color="primary" sx={{ mb: 2 }} />
-                <Typography variant="h6" color="white">
-                    Fetching data for you...
-                </Typography>
-            </Box>
-        );
+        return <Loading text="Fetching data for you..." />;
     }
 
     const { resume, job, job_resume_score } = jobResume;

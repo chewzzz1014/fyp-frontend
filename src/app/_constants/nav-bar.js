@@ -45,15 +45,6 @@ export const NAVIGATION = [
         icon: <InfoIcon />,
         pattern: 'about',
     },
-    {
-        segment: 'logout',
-        title: 'Logout',
-        icon: <LogoutIcon />,
-        pattern: 'logout',
-        method: () => {
-            alert('Logging out...');
-        },
-    },
 ];
 
 export const theme = extendTheme({

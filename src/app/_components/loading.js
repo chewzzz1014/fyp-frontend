@@ -1,8 +1,29 @@
-// Loading.js
-export default function Loading() {
+import {
+    Box,
+    Typography,
+    CircularProgress,
+} from "@mui/material";
+
+export default function Loading({ text }) {
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="border-4 border-t-4 border-gray-300 border-t-blue-500 rounded-full w-16 h-16 animate-spin"></div>
-        </div>
+        <Box
+            sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 1200,
+                flexDirection: "column",
+            }}
+        >
+            <CircularProgress color="primary" sx={{ mb: 2 }} />
+            <Typography variant="h6">
+                {text}
+            </Typography>
+        </Box>
     );
 }

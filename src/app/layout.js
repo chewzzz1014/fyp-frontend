@@ -9,6 +9,7 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, theme } from './_constants/nav-bar';
 import { isTokenValid, getAccessToken } from './_utils/auth';
+import LogoutButton from './_components/logout';
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +72,12 @@ export default function RootLayout({ children }) {
           }}
           theme={theme}
         >
-          <DashboardLayout>
+          <DashboardLayout
+            slots={{
+              toolbarActions: LogoutButton,
+            }}
+          >
+            {/* Main Content */}
             <div className="flex">
               <div className="flex-1">{children}</div>
             </div>

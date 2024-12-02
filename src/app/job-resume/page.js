@@ -14,13 +14,13 @@ import {
     CardContent,
     FormHelperText,
     Grid,
-    CircularProgress,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { getResumes } from "../_services/resume";
 import { addJobResume } from "../_services/job-resume";
 import { getJobStatuses } from "../_services/job";
 import NERRenderer from "../_components/ner-renderer";
+import Loading from "../_components/loading";
 
 export default function JobResumePage() {
     const router = useRouter();
@@ -285,28 +285,7 @@ export default function JobResumePage() {
                     </Button>
                 </Box>
             </form>
-            {isLoadingResult && (
-                <Box
-                    sx={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        zIndex: 1200,
-                        flexDirection: "column",
-                    }}
-                >
-                    <CircularProgress color="primary" sx={{ mb: 2 }} />
-                    <Typography variant="h6" color="white">
-                        Analysing...
-                    </Typography>
-                </Box>
-            )}
+            {isLoadingResult && <Loading text="Analysing..." /> }
         </div>
     );
 }
