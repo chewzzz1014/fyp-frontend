@@ -10,25 +10,23 @@ export default function AboutPage() {
 
             {/* Introduction Section */}
             <p className="mb-6 text-lg text-justify">
-                Welcome to our Resume Parsing and Job Matching tool! This platform allows you to easily upload your resume (in PDF format),
-                parse it to extract important entities, and match your skills with the requirements of job descriptions.
-            </p>
-            <p className="mb-6 text-lg text-justify">
-                Here, we explain how the tool works and the different features it provides:
+                Welcome to ResuMatch! This platform provides easy way to manage your job applications and to improve your resume.
             </p>
 
             {/* Features Section */}
             <h2 className="text-2xl font-semibold mt-6 mb-4">Key Features</h2>
             <p className="mb-4 text-lg text-justify">
-                <strong>1. Resume Parsing:</strong> Upload your resume, and our tool will extract important information such as your personal details,
-                education, work experience, and skills from the PDF.
+                <strong>1. Resume Parsing:</strong> Upload your resume in PDF format and extract the contents.
             </p>
             <p className="mb-4 text-lg text-justify">
-                <strong>2. Named Entity Recognition (NER):</strong> We perform NER on the parsed text to categorize and label the entities.
-                This allows us to identify specific parts of your resume such as your name, contact information, educational qualifications, work history, and skills.
+                <strong>2. Named Entity Recognition (NER):</strong> Perform NER on the parsed resume contents to categorize and label the entities.
+                This identifies specific parts of your resume such as your name, contact information, educational qualifications, work history, and skills.
             </p>
             <p className="mb-4 text-lg text-justify">
-                <strong>3. Job-Resume Matching:</strong> By extracting the skills from both the resume and a given job description, we compare the two to determine how well your qualifications align with the job&apos;s requirements.
+                <strong>3. Job-Resume Matching:</strong> By extracting and comparing the skills from both the resume and a given job description, it produces a job-resume score that tells how well your qualifications align with the job&apos;s requirements!
+            </p>
+            <p className="mb-4 text-lg text-justify">
+                <strong>4. Dashboard:</strong> Kanban board helps you to organise and update your job applications easily. It also displays and compares the NER entities of a resume and job description.
             </p>
 
             {/* NER Table Section */}

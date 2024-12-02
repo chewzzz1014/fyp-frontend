@@ -1,11 +1,13 @@
 "use client";
 
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '../_services/auth';
 import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
 import { ThemeSwitcher } from '@toolpad/core/DashboardLayout';
+import LOGOSVG from '../../../public/logo.svg';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -68,8 +70,13 @@ export default function LoginPage() {
       <div className="absolute top-4 right-4">
         <ThemeSwitcher />
       </div>
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+      <main className="flex flex-col gap-4 row-start-2 items-center sm:items-start w-1/3 mx-auto">
         <h1 className="text-2xl font-semibold">Login</h1>
+        <div className='w-full flex items-center justify-center'>
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center p-2 shadow-md">
+            <Image src={LOGOSVG} alt="ResuMatch" width={60} height={60} />
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xs sm:max-w-sm">
           <div className="flex flex-col">

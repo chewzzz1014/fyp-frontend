@@ -2,6 +2,8 @@
 
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import './globals.css';
+import Image from "next/image";
+import LOGOSVG from '../../public/logo.svg';
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -48,8 +50,8 @@ export default function RootLayout({ children }) {
           <AppProvider
             navigation={NAVIGATION}
             branding={{
-              logo: <img src="https://mui.com/static/logo.png" alt="MUI logo" />,
-              title: 'MUI',
+              logo: <Image src={LOGOSVG} alt={"ResuMatch"}/>,
+              title: 'ResuMatch',
             }}
             theme={theme}
           >
