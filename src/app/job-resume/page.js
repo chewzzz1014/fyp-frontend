@@ -272,7 +272,7 @@ export default function JobResumePage() {
                         Job Details
                     </Typography>
                     <FormControl fullWidth sx={{ mr: 2, mb: 2 }} error={jobsError}>
-                        <InputLabel>Select a Job (Optional if add a new job)</InputLabel>
+                        <InputLabel>Select a Job</InputLabel>
                         <Select
                             value={selectedJob ? selectedJob.job_id : -1}
                             onChange={handleJobChange}

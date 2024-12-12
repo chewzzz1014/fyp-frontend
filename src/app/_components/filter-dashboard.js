@@ -4,7 +4,7 @@ import { TextField, MenuItem, FormControl, Select, InputLabel } from "@mui/mater
 export default function FilterDashboard({ onFilterChange }) {
     const [aspect, setAspect] = useState("resumeName");
     const [query, setQuery] = useState("");
-    const [matchType, setMatchType] = useState("exact"); // Added match type
+    const [matchType, setMatchType] = useState("exact");
 
     const handleAspectChange = (event) => {
         setAspect(event.target.value);

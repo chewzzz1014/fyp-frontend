@@ -9,7 +9,7 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
 import { getJobStatuses } from "../_services/job";
 import { updateJobApplicationStatus } from "../_services/job-resume";
-import { formatJobResumeScore, getColumnColor } from "@/app/_utils/job-resume";
+import { formatJobResumeScore, getColumnColor, getScoreColor } from "@/app/_utils/job-resume";
 import CardInfo from "./card-info";
 import Loading from "./loading";
 import FilterDashboard from "./filter-dashboard";
@@ -186,7 +186,12 @@ export default function Dashboard() {
                                                             <h3 className="font-bold text-lg">
                                                                 {jobResume.job.job_title}
                                                             </h3>
-                                                            <span className="font-bold rounded bg-blue-100 text-blue-500 text-lg p-1">
+                                                            <span
+                                                                className="font-bold rounded text-lg p-1 bg-blue-100 text-blue-500"
+                                                                style={{
+                                                                    color: getScoreColor(jobResume.job_resume_score),
+                                                                }}
+                                                            >
                                                                 {formatJobResumeScore(jobResume.job_resume_score)}%
                                                             </span>
                                                         </div>
