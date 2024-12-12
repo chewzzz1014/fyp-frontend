@@ -142,18 +142,15 @@ export default function JobResumePage() {
         setAnalyseError("");
     };
 
-    // Handle job details input
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setJobDetails({ ...jobDetails, [name]: value });
         setAnalyseError("");
     };
 
-    // Handle form submission
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        // Validate all fields
         const newErrors = {
             resume: !selectedResume,
             title: !jobDetails.title.trim(),
@@ -275,7 +272,7 @@ export default function JobResumePage() {
                         Job Details
                     </Typography>
                     <FormControl fullWidth sx={{ mr: 2, mb: 2 }} error={jobsError}>
-                        <InputLabel>Select a Job (Optional)</InputLabel>
+                        <InputLabel>Select a Job (Optional if add a new job)</InputLabel>
                         <Select
                             value={selectedJob ? selectedJob.job_id : -1}
                             onChange={handleJobChange}
@@ -289,7 +286,6 @@ export default function JobResumePage() {
                             ))}
                         </Select>
                     </FormControl>
-                    {/* First Row: Job Title and Job Link */}
                     <Grid container sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={6}>
                             <TextField
@@ -318,8 +314,7 @@ export default function JobResumePage() {
                             />
                         </Grid>
                     </Grid>
-
-                    {/* Second Row: Company and Application Status */}
+                    
                     <Grid container sx={{ mb: 2 }}>
                         <Grid item xs={12} sm={12}>
                             <TextField
@@ -336,7 +331,6 @@ export default function JobResumePage() {
                         </Grid>
                     </Grid>
 
-                    {/* Third Row: Job Description */}
                     <Grid sx={{ mb: 2 }}>
                         <Grid item xs={12}>
                             <TextField

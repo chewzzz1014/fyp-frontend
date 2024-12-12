@@ -43,7 +43,6 @@ export default function ProfilePage() {
         <div className="p-8">
             <h1 className="text-3xl font-bold mx-8 mb-8">Profile</h1>
 
-            {/* Profile Details Section - Invisible table */}
             <div className="rounded-lg p-8">
                 <table className="table-auto w-full text-xl mb-8">
                     <tbody>
@@ -69,7 +68,6 @@ export default function ProfilePage() {
                 </table>
             </div>
 
-            {/* Resume Information Section - Bordered table */}
             <h2 className="text-xl font-semibold mx-8">Resumes Uploaded</h2>
             <div className="rounded-lg p-8">
                 <table className="table-auto w-full text-lg border border-gray-300">

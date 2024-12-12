@@ -46,16 +46,13 @@ export default function JobResumeMatchingPage() {
         fetchResumes();
     }, [jobResumeId]);
 
-    // Handle "Done" button click
     const handleDoneClick = () => {
-        // Trigger the success popup dialog
         setIsDialogOpen(true);
     };
 
-    // Handle dialog close
     const handleDialogClose = () => {
         setIsDialogOpen(false);
-        router.push("/dashboard"); // Redirect to dashboard
+        router.push("/dashboard");
     };
 
     if (error) {
@@ -129,6 +126,7 @@ export default function JobResumeMatchingPage() {
                 </Box>
             </Paper>
 
+            {/* Resume Section */}
             <Box sx={{
                 display: "flex",
                 flexDirection: { xs: "column", md: "row" },
@@ -136,7 +134,6 @@ export default function JobResumeMatchingPage() {
                 padding: "10px",
                 p: 3,
             }}>
-                {/* Resume Section */}
                 <Grid item xs={12} md={6} sx={{ flex: "1" }}>
                     <Card variant="outlined" sx={{ backgroundColor: "#F5F5F5" }}>
                         <CardContent>

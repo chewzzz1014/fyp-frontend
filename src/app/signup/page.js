@@ -1,6 +1,5 @@
 "use client";
 
-import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
@@ -8,7 +7,6 @@ import { signup } from '../_services/auth';
 import { hashPassword, validateEmail } from '../_utils/auth';
 import { isTokenValid, getAccessToken } from '../_utils/auth';
 import { ThemeSwitcher } from '@toolpad/core/DashboardLayout';
-import LOGOSVG from '../../../public/logo.svg';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -83,11 +81,6 @@ export default function SignUpPage() {
       </div>
       <main className="flex flex-col gap-4 row-start-2 items-center sm:items-start w-1/3 mx-auto">
         <h1 className="text-2xl font-semibold">Sign Up</h1>
-        <div className='w-full flex items-center justify-center'>
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center p-2 shadow-md">
-            <Image src={LOGOSVG} alt="ResuMatch" width={50} height={50} />
-          </div>
-        </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
           <div className="flex flex-col">
             <label htmlFor="username" className="text-sm font-medium">Username</label>

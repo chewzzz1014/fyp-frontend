@@ -1,20 +1,22 @@
 "use client";
 
 import React from "react";
+import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 export default function AboutPage() {
     return (
         <div className="p-8">
-            {/* Title Section */}
-            <h1 className="text-4xl font-bold mb-6 text-center">About This Website</h1>
+            <h1 className="text-4xl font-bold mb-6 text-center">About ResuMatch <TipsAndUpdatesOutlinedIcon fontSize="large" /></h1>
 
-            {/* Introduction Section */}
             <p className="mb-6 text-lg text-justify">
                 Welcome to ResuMatch! This platform provides easy way to manage your job applications and to improve your resume.
             </p>
 
-            {/* Features Section */}
-            <h2 className="text-2xl font-semibold mt-6 mb-4">Key Features</h2>
+            <div className="flex items-center mt-6 mb-4">
+                <InfoOutlinedIcon fontSize="medium" className="mr-3" />
+                <h2 className="text-2xl font-semibold">Key Features</h2>
+            </div>
             <p className="mb-4 text-lg text-justify">
                 <strong>1. Resume Parsing:</strong> Upload your resume in PDF format and extract the contents.
             </p>
@@ -29,8 +31,10 @@ export default function AboutPage() {
                 <strong>4. Dashboard:</strong> Kanban board helps you to organise and update your job applications easily. It also displays and compares the NER entities of a resume and job description.
             </p>
 
-            {/* NER Table Section */}
-            <h2 className="text-2xl font-semibold mt-6 mb-4">Entities Extracted from Resume</h2>
+            <div className="flex items-center mt-6 mb-4">
+                <InfoOutlinedIcon fontSize="medium" className="mr-3" />
+                <h2 className="text-2xl font-semibold">Entities Extracted from Resume</h2>
+            </div>
             <div className="overflow-x-auto text-black shadow-md rounded-lg">
                 <table className="min-w-full table-auto">
                     <thead>

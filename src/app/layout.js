@@ -2,8 +2,6 @@
 
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import './globals.css';
-import Image from "next/image";
-import LOGOSVG from '../../public/logo.svg';
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -12,6 +10,7 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { NAVIGATION, theme } from './_constants/nav-bar';
 import { isTokenValid, getAccessToken } from './_utils/auth';
 import LogoutButton from './_components/logout';
+import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined';
 
 export default function RootLayout({ children }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,21 +35,19 @@ export default function RootLayout({ children }) {
     }
   }, [currentPathName, isNoDashboardPage, router]);
 
-  // Render a loading state while authentication status is being determined
   if (isLoading) {
-    return null; // or a loader/spinner component
+    return null;
   }
 
-  // Conditional rendering based on route and authentication status
+  // has no dashboard
   if (isNoDashboardPage) {
-    // Non-dashboard pages (e.g., login, signup)
     return (
       <html lang="en">
         <body>
           <AppProvider
             navigation={NAVIGATION}
             branding={{
-              logo: <Image src={LOGOSVG} alt={"ResuMatch"}/>,
+              logo: <TipsAndUpdatesOutlinedIcon fontSize="large" />,
               title: 'ResuMatch',
             }}
             theme={theme}
@@ -62,15 +59,15 @@ export default function RootLayout({ children }) {
     );
   }
 
-  // Dashboard pages
+  // has dashboard
   return (
     <html lang="en">
       <body>
         <AppProvider
           navigation={NAVIGATION}
           branding={{
-            logo: <img src="https://mui.com/static/logo.png" alt="MUI logo" />,
-            title: 'MUI',
+            logo: <TipsAndUpdatesOutlinedIcon fontSize="large" />,
+            title: 'ResuMatch',
           }}
           theme={theme}
         >
