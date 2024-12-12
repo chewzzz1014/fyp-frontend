@@ -111,7 +111,7 @@ export default function JobResumePage() {
                 title: "",
                 company: "",
                 link: "",
-                applicationStatus: 1,
+                applicationStatus: jobDetails.applicationStatus,
                 jobDesc: "",
             };
             setJobsError("");
@@ -124,7 +124,7 @@ export default function JobResumePage() {
             title: job.job_title,
             company: job.company_name,
             link: job.job_link,
-            applicationStatus: job.application_status,
+            applicationStatus: jobDetails.applicationStatus,
             jobDesc: job.job_desc,
         };
 

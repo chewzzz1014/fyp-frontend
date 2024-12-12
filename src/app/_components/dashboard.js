@@ -3,12 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import {
-    Button,
-    Snackbar,
-    Alert
-} from "@mui/material";
-import ExploreIcon from '@mui/icons-material/Explore';
+import { Button, Snackbar, Alert } from "@mui/material";
+import ExploreIcon from "@mui/icons-material/Explore";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
 import { getJobStatuses } from "../_services/job";
@@ -16,11 +12,13 @@ import { updateJobApplicationStatus } from "../_services/job-resume";
 import { formatJobResumeScore, getColumnColor } from "@/app/_utils/job-resume";
 import CardInfo from "./card-info";
 import Loading from "./loading";
+import FilterDashboard from "./filter-dashboard";
 
 export default function Dashboard() {
     const router = useRouter();
 
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [isLoadingData, setIsLoadingData] = useState(false);
     const [jobStatuses, setJobStatuses] = useState([]);
     const [isLoadingJobStatuses, setIsLoadingJobStatuses] = useState(false);
@@ -33,8 +31,8 @@ export default function Dashboard() {
             setIsLoadingData(true);
             try {
                 const response = await getAllJobResumes();
-                console.log(response)
                 setData(response);
+                setFilteredData(response); // Initially show all data
             } catch (error) {
                 setError("Failed to fetch data");
             } finally {
@@ -45,10 +43,9 @@ export default function Dashboard() {
             setIsLoadingJobStatuses(true);
             try {
                 const response = await getJobStatuses();
-                console.log(response)
                 setJobStatuses(response);
             } catch (error) {
-                setError("Failed to fetch job statuses")
+                setError("Failed to fetch job statuses");
             } finally {
                 setIsLoadingJobStatuses(false);
             }
@@ -56,6 +53,34 @@ export default function Dashboard() {
         fetchAllJobResumes();
         fetchJobStatuses();
     }, []);
+
+    const handleFilterChange = (filters) => {
+        const { aspect, value, matchType } = filters;
+
+        if (value.trim() === "") {
+            setFilteredData(data);
+            return;
+        }
+
+        const filtered = data.filter((jobResume) => {
+            const targetValue = (() => {
+                if (aspect === "resumeName") return jobResume.resume.resume_name;
+                if (aspect === "companyName") return jobResume.job.company_name;
+                if (aspect === "jobTitle") return jobResume.job.job_title;
+                return "";
+            })();
+
+            if (matchType === "exact") {
+                return targetValue.toLowerCase() === value.toLowerCase();
+            } else if (matchType === "ambiguous") {
+                return targetValue.toLowerCase().includes(value.toLowerCase());
+            }
+
+            return false;
+        });
+
+        setFilteredData(filtered);
+    };
 
     const handleExploreNowClick = () => {
         router.push("/job-resume");
@@ -73,50 +98,38 @@ export default function Dashboard() {
 
     const onDragEnd = async (result) => {
         const { destination, source } = result;
-
-        // If no destination, exit
         if (!destination) return;
-
-        // If the item is dropped back in the same position, exit
         if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
-        // Parse droppableId to find the source and destination statuses
         const sourceStatusId = parseInt(source.droppableId, 10);
         const destinationStatusId = parseInt(destination.droppableId, 10);
 
         if (isNaN(sourceStatusId) || isNaN(destinationStatusId)) {
-            console.error('Invalid droppableId:', source.droppableId, destination.droppableId);
+            console.error("Invalid droppableId:", source.droppableId, destination.droppableId);
             return;
         }
 
-        // Get the source and destination job resumes
-        const sourceItems = data.filter(jobResume => jobResume.application_status === sourceStatusId);
-        const destinationItems = data.filter(jobResume => jobResume.application_status === destinationStatusId);
+        const sourceItems = filteredData.filter(jobResume => jobResume.application_status === sourceStatusId);
+        const destinationItems = filteredData.filter(jobResume => jobResume.application_status === destinationStatusId);
 
-        // Extract the moved item from the source
         const [movedItem] = sourceItems.splice(source.index, 1);
-
-        // Update the application status of the moved item
         movedItem.application_status = destinationStatusId;
-
-        // Insert the moved item into the destination
         destinationItems.splice(destination.index, 0, movedItem);
 
-        // Update the main data array
-        const updatedData = data.map(jobResume => {
+        const updatedData = filteredData.map(jobResume => {
             if (jobResume.job_resume_id === movedItem.job_resume_id) {
-                return movedItem; // Replace with the updated item
+                return movedItem;
             }
             return jobResume;
         });
 
-        setData(updatedData);
+        setFilteredData(updatedData);
 
         try {
             await updateJobApplicationStatus({
                 job_resume_id: movedItem.job_resume_id,
                 new_status: movedItem.application_status
-            })
+            });
         } catch (error) {
             setError("Failed to update job application status in database");
         }
@@ -124,14 +137,13 @@ export default function Dashboard() {
 
     return (
         <div className="min-h-screen p-8">
-            {
-                error &&
+            {error && (
                 <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError("")}>
                     <Alert onClose={() => setError("")} severity="error">
                         {error}
                     </Alert>
                 </Snackbar>
-            }
+            )}
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold">Job Application Status</h1>
                 <Button
@@ -143,9 +155,12 @@ export default function Dashboard() {
                     Explore Now
                 </Button>
             </div>
+
+            {/* Filter Component */}
+            <FilterDashboard onFilterChange={handleFilterChange} />
+
             <DragDropContext onDragEnd={onDragEnd}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-black">
-                    {/* Render all sections in a 3-column grid */}
                     {!isLoadingJobStatuses && jobStatuses.map((status) => (
                         <Droppable key={status.status_id} droppableId={`${status.status_id}`}>
                             {(provided) => (
@@ -158,7 +173,7 @@ export default function Dashboard() {
                                         {status.status_name.charAt(0).toUpperCase() + status.status_name.slice(1)}
                                     </h2>
                                     <div className="space-y-4 mt-4">
-                                        {data.filter(ele => ele.application_status === status.status_id).map((jobResume, index) => (
+                                        {filteredData.filter(ele => ele.application_status === status.status_id).map((jobResume, index) => (
                                             <Draggable key={jobResume.job_resume_id} draggableId={`${jobResume.job_resume_id}`} index={index}>
                                                 {(provided) => (
                                                     <div
@@ -175,16 +190,10 @@ export default function Dashboard() {
                                                                 {formatJobResumeScore(jobResume.job_resume_score)}%
                                                             </span>
                                                         </div>
-
-                                                        {/* Company name */}
                                                         <p className="text-sm text-gray-500 mb-2 truncate">{jobResume.job.company_name}</p>
-
-                                                        {/* Resume version */}
                                                         <p className="text-sm text-gray-600 truncate">
                                                             Used <span className="font-semibold">{jobResume.resume.resume_name}</span>
                                                         </p>
-
-                                                        {/* Add button with icon in the bottom-right corner */}
                                                         <button
                                                             onClick={() => handleCardClick(jobResume)}
                                                             className="absolute bottom-2 right-2 bg-gray-200 hover:bg-gray-300 p-1 rounded-full shadow-md"
