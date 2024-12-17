@@ -46,3 +46,51 @@ export const getJobStatuses = async () => {
         throw new Error("Failed to connect to the server. Please try again later.");
     }
 };
+
+export const addJob = async (data) => {
+    try {
+        const token = localStorage.getItem("access_token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const response = await axios.post(
+            `${API_URL}/job`,
+            data,
+            {
+                headers: {
+                    ...headers,
+                },
+            }
+        );
+        console.log(response)
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.detail || "An error occurred while adding job.");
+        }
+        throw new Error("Failed to connect to the server. Please try again later.");
+    }
+};
+
+export const updateJob = async (data) => {
+    try {
+        const token = localStorage.getItem("access_token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        const response = await axios.put(
+            `${API_URL}/job/${data.job_id}`,
+            data,
+            {
+                headers: {
+                    ...headers,
+                },
+            }
+        );
+        console.log(response)
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            throw new Error(error.response.data.detail || "An error occurred while updating job.");
+        }
+        throw new Error("Failed to connect to the server. Please try again later.");
+    }
+};

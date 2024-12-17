@@ -73,15 +73,15 @@ export default function ProfilePage() {
                 <table className="table-auto w-full text-lg border border-gray-300">
                     <thead>
                         <tr className="bg-blue-600 text-white">
-                            <th className="px-4 py-2 text-center">Uploaded on</th>
                             <th className="px-4 py-2 text-center">Resume Name</th>
+                            <th className="px-4 py-2 text-center">Uploaded on</th>
                         </tr>
                     </thead>
                     <tbody>
                         {profile.resumes.map((resume) => (
                             <tr key={resume.resume_id} className="border-t">
-                                <td className="px-4 py-2 text-center">{formatDate(resume.uploaded_on)}</td>
                                 <td className="px-4 py-2 text-center">{resume.resume_name}</td>
+                                <td className="px-4 py-2 text-center">{formatDate(resume.uploaded_on)}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -3,6 +3,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import InsightsIcon from '@mui/icons-material/Insights';
 import InfoIcon from '@mui/icons-material/Info';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import WorkIcon from '@mui/icons-material/Work';
 import { extendTheme } from '@mui/material/styles';
 
 export const NAVIGATION = [
@@ -15,6 +16,12 @@ export const NAVIGATION = [
         title: 'Dashboard',
         icon: <DashboardIcon />,
         pattern: 'dashboard',
+    },
+    {
+        segment: 'job',
+        title: 'Job',
+        icon: <WorkIcon />,
+        pattern: 'job',
     },
     {
         segment: 'resume',
