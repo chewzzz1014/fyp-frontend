@@ -9,7 +9,7 @@ import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import { getAllJobResumes } from "../_services/job-resume";
 import { getJobStatuses } from "../_services/job";
 import { updateJobApplicationStatus } from "../_services/job-resume";
-import { formatJobResumeScore, getColumnColor, getScoreColor } from "@/app/_utils/job-resume";
+import { formatJobResumeScore, getColumnColor } from "@/app/_utils/job-resume";
 import CardInfo from "./card-info";
 import Loading from "./loading";
 import FilterDashboard from "./filter-dashboard";
@@ -55,7 +55,33 @@ export default function Dashboard() {
     }, []);
 
     const handleFilterChange = (filters) => {
-        const { aspect, value, matchType } = filters;
+        // aspect -> filtering category
+        // scoreComparison and scoreValue for filter score
+        // matchType and value for others
+        const { aspect, matchType, scoreComparison, scoreValue, value } = filters;
+
+        if (aspect === "jobResumeScore") {
+            const parsedValue = parseFloat(scoreValue);
+            console.log(parsedValue)
+            if (isNaN(parsedValue)) {
+                setFilteredData(data);
+                return;
+            }
+
+            const filtered = data.filter((jobResume) => {
+                if (scoreComparison === "greater") {
+                    return jobResume.job_resume_score*100 > parsedValue;
+                } else if (scoreComparison === "smaller") {
+                    return jobResume.job_resume_score*100 < parsedValue;
+                } else if (scoreComparison === "equal") {
+                    return (jobResume.job_resume_score*100).toFixed(2) === parsedValue.toFixed(2);
+                }
+                return false;
+            });
+
+            setFilteredData(filtered);
+            return;
+        }
 
         if (value.trim() === "") {
             setFilteredData(data);
@@ -186,12 +212,7 @@ export default function Dashboard() {
                                                             <h3 className="font-bold text-lg">
                                                                 {jobResume.job.job_title}
                                                             </h3>
-                                                            <span
-                                                                className="font-bold rounded text-lg p-1 bg-blue-100 text-blue-500"
-                                                                style={{
-                                                                    color: getScoreColor(jobResume.job_resume_score),
-                                                                }}
-                                                            >
+                                                            <span className="font-bold rounded text-lg p-1 bg-blue-100 text-blue-500">
                                                                 {formatJobResumeScore(jobResume.job_resume_score)}%
                                                             </span>
                                                         </div>
