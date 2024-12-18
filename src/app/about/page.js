@@ -28,7 +28,7 @@ export default function AboutPage() {
                 <strong>3. Job-Resume Matching:</strong> By extracting and comparing the skills from both the resume and a given job description, it produces a job-resume score that tells how well your qualifications align with the job&apos;s requirements!
             </p>
             <p className="mb-4 text-lg text-justify">
-                <strong>4. Dashboard:</strong> Kanban board helps you to organise and update your job applications easily. It also displays and compares the NER entities of a resume and job description.
+                <strong>4. Dashboard:</strong> Kanban board helps you to organise and update your job applications easily. It also displays and compares the NER entities between a resume and job description.
             </p>
 
             <div className="flex items-center mt-6 mb-4">

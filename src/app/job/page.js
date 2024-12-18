@@ -14,7 +14,7 @@ import {
     IconButton,
     Card,
     CardContent,
-    Typography
+    Tooltip
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import PreviewIcon from "@mui/icons-material/Visibility";
@@ -72,7 +72,7 @@ export default function JobPage() {
                 jobDesc: "",
             });
             setSelectedJob(null);
-            if(isPreview) setIsPreview(false);
+            if (isPreview) setIsPreview(false);
             return;
         }
 
@@ -136,6 +136,7 @@ export default function JobPage() {
                     setSelectedJob(addedJob);
                 }
 
+                setIsPreview(!isPreview);
                 setIsLoadingResult(false);
             } catch (error) {
                 setIsLoadingResult(false);
@@ -157,10 +158,11 @@ export default function JobPage() {
             <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mb: 4, mr: 2 }}>
                 <h1 className="text-3xl font-bold mx-8">My Jobs</h1>
                 <div display="flex" alignItems="center">
-                    {isPreview ? <span>Edit</span> : <span>Preview</span>}
-                    <IconButton onClick={togglePreview}>
-                        {isPreview ? <EditIcon /> : <PreviewIcon />}
-                    </IconButton>
+                    <Tooltip title={`Switch to ${isPreview ? 'edit' : 'preview'} mode`} arrow placement="bottom">
+                        <IconButton onClick={togglePreview}>
+                            {isPreview ? <EditIcon /> : <PreviewIcon />}
+                        </IconButton>
+                    </Tooltip>
                 </div>
             </Box>
 

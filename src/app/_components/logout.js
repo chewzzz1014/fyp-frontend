@@ -66,7 +66,7 @@ export default function LogoutButton() {
                             },
                         }}
                     >
-                        <DialogTitle>Confirm Logout</DialogTitle>
+                        <DialogTitle>Logout</DialogTitle>
                         <DialogContent>
                             Are you sure you want to log out?
                         </DialogContent>

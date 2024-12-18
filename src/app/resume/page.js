@@ -124,7 +124,7 @@ export default function ResumePage() {
 
     return (
         <div className="min-h-screen p-8">
-            <h1 className="text-3xl font-bold mb-8">Resume</h1>
+            <h1 className="text-3xl font-bold mb-8">My Resumes</h1>
             <Box mb={4}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <FormControl fullWidth sx={{ mr: 2 }}>

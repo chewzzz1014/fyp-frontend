@@ -145,7 +145,7 @@ export default function Dashboard() {
                 </Snackbar>
             )}
             <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Job Application Status</h1>
+                <h1 className="text-3xl font-bold">Dashboard</h1>
                 <Button
                     variant="contained"
                     color="primary"

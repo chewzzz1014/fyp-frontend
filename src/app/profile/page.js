@@ -41,10 +41,10 @@ export default function ProfilePage() {
 
     return (
         <div className="p-8">
-            <h1 className="text-3xl font-bold mx-8 mb-8">Profile</h1>
+            <h1 className="text-3xl font-bold mx-8">Profile</h1>
 
             <div className="rounded-lg p-8">
-                <table className="table-auto w-full text-xl mb-8">
+                <table className="table-auto w-full text-xl mb-4">
                     <tbody>
                         <tr>
                             <td className="pr-4 py-2 font-semibold w-1/3">Username</td>
