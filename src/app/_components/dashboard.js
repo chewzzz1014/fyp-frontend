@@ -61,8 +61,8 @@ export default function Dashboard() {
         const { aspect, matchType, scoreComparison, scoreValue, value } = filters;
 
         if (aspect === "jobResumeScore") {
-            const parsedValue = parseFloat(scoreValue);
-            console.log(parsedValue)
+            const parsedValue = parseFloat(scoreValue)
+            
             if (isNaN(parsedValue)) {
                 setFilteredData(data);
                 return;
