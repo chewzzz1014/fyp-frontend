@@ -8,10 +8,16 @@ import {
     Typography,
 } from "@mui/material";
 import Chip from '@mui/material/Chip';
+import { useRouter } from "next/navigation";
 import { getJobStatusName } from "@/app/_utils/job-resume";
 import NERRenderer from "./ner-renderer";
 
 export default function CardInfo({ openModal, handleCloseModal, selectedJobResume, jobStatuses }) {
+    const router = useRouter();
+    const redirectDetailPage = () => {
+        router.push(`/job-resume/result?job_resume_id=${selectedJobResume.job_resume_id}`);
+    };
+
     return <Dialog open={openModal} onClose={handleCloseModal} maxWidth="lg" fullWidth>
         <DialogContent className="flex gap-8">
             <div className="w-1/2 border-r pr-8 overflow-auto">
@@ -59,8 +65,11 @@ export default function CardInfo({ openModal, handleCloseModal, selectedJobResum
             </div>
         </DialogContent>
         <DialogActions>
-            <Button onClick={handleCloseModal} color="primary">
+            <Button onClick={handleCloseModal} color="secondary">
                 Close
+            </Button>
+            <Button onClick={redirectDetailPage} color="primary">
+                Details
             </Button>
         </DialogActions>
     </Dialog>

@@ -253,7 +253,7 @@ export default function JobPage() {
                                 multiline
                                 minRows={4}
                                 error={errors.jobDesc}
-                                helperText={errors.jobDesc ? "Job description is required" : !isPreview && selectedJob && "Modifying the job description may take extra time as NER predictions will be updated."}
+                                helperText={errors.jobDesc ? "Job description is required" : !isPreview && selectedJob && "Modifying the job description may take extra time to process as NER predictions will be updated."}
                             />
                         )}
                     </Grid>
