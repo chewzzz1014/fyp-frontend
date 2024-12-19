@@ -128,6 +128,13 @@ export default function JobResumePage() {
             jobDesc: job.job_desc,
         };
 
+        setErrors({
+            ...errors,
+            title: false,
+            company: false,
+            link: false,
+            jobDesc: false,
+        });
         setJobsError("");
         setJobDetails(updatedJobDetails);
         setSelectedJob(job);
@@ -145,6 +152,7 @@ export default function JobResumePage() {
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setJobDetails({ ...jobDetails, [name]: value });
+        setErrors({ ...errors, [name]: false });
         setAnalyseError("");
     };
 
@@ -239,7 +247,7 @@ export default function JobResumePage() {
                     <Typography variant="h5" gutterBottom>
                         Job Application Status
                     </Typography>
-                    <FormControl fullWidth error={jobStatusesError || errors.applicationStatus} required>
+                    <FormControl fullWidth error={jobStatusesError || errors.applicationStatus}>
                         <InputLabel>Application Status</InputLabel>
                         <Select
                             name="applicationStatus"
@@ -294,7 +302,6 @@ export default function JobResumePage() {
                                 value={jobDetails.title}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 error={errors.title}
                                 helperText={errors.title && "Job title is required"}
                                 disabled={selectedJob}
@@ -307,9 +314,8 @@ export default function JobResumePage() {
                                 value={jobDetails.company}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 error={errors.company}
-                                helperText={errors.company && "Company is required"}
+                                helperText={errors.company && "Company name is required"}
                                 disabled={selectedJob}
                             />
                         </Grid>
@@ -323,7 +329,6 @@ export default function JobResumePage() {
                                 value={jobDetails.link}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 error={errors.link}
                                 helperText={errors.link && "Job link is required"}
                                 disabled={selectedJob}
@@ -340,15 +345,10 @@ export default function JobResumePage() {
                                 onChange={handleInputChange}
                                 fullWidth
                                 multiline
-                                minRows={4} // Minimum number of rows
-                                maxRows={10} // Maximum number of rows before scroll appears
-                                required
+                                minRows={4}
                                 error={errors.jobDesc}
                                 helperText={errors.jobDesc && "Job description is required"}
                                 disabled={selectedJob}
-                                InputProps={{
-                                    style: { overflow: "auto" },
-                                }}
                             />
                         </Grid>
                     </Grid>

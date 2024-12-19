@@ -84,12 +84,19 @@ export default function JobPage() {
             jobDesc: job.job_desc,
         });
         setSelectedJob(job);
+        setErrors({
+            title: false,
+            company: false,
+            link: false,
+            jobDesc: false,
+        });
         setAnalyseError("");
     };
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         setJobDetails({ ...jobDetails, [name]: value });
+        setErrors({ ...errors, [name]: false });
         setAnalyseError("");
     };
 
@@ -193,7 +200,6 @@ export default function JobPage() {
                                 value={jobDetails.title}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 disabled={isPreview}
                                 error={errors.title}
                                 helperText={errors.title && "Job title is required"}
@@ -206,10 +212,9 @@ export default function JobPage() {
                                 value={jobDetails.company}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 disabled={isPreview}
                                 error={errors.company}
-                                helperText={errors.company && "Company is required"}
+                                helperText={errors.company && "Company name is required"}
                             />
                         </Grid>
                     </Grid>
@@ -222,7 +227,6 @@ export default function JobPage() {
                                 value={jobDetails.link}
                                 onChange={handleInputChange}
                                 fullWidth
-                                required
                                 disabled={isPreview}
                                 error={errors.link}
                                 helperText={errors.link && "Job link is required"}
@@ -248,9 +252,8 @@ export default function JobPage() {
                                 fullWidth
                                 multiline
                                 minRows={4}
-                                required
                                 error={errors.jobDesc}
-                                helperText={errors.jobDesc && "Job description is required"}
+                                helperText={errors.jobDesc ? "Job description is required" : !isPreview && selectedJob && "Modifying the job description may take extra time as NER predictions will be updated."}
                             />
                         )}
                     </Grid>
