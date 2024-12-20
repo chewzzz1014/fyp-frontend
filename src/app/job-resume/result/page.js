@@ -70,9 +70,17 @@ export default function JobResumeMatchingPage() {
     }
 
     const { resume, job, job_resume_score } = jobResume;
-    const resumeSkills = resume.ner_prediction ? resume.ner_prediction.filter(ele => ele.label === 'SKILL') : [];
-    const jobSkills = job.ner_prediction ? job.ner_prediction.filter(ele => ele.label === 'SKILL') : [];
-    console.log(jobResume)
+
+    const resumeSkills = resume?.ner_prediction
+        ?.filter(({ label }) => label === 'SKILL')
+        ?.map(({ text, ...rest }) => ({ text, ...rest }))
+        ?.sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })) || [];
+
+    const jobSkills = job.ner_prediction
+        ?.filter(({ label }) => label === 'SKILL')
+        ?.map(({ text, ...rest }) => ({ text, ...rest }))
+        ?.sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })) || [];
+
     const formattedJobResumeScore = formatJobResumeScore(job_resume_score);
 
     return (
