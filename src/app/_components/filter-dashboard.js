@@ -4,7 +4,7 @@ import { TextField, MenuItem, FormControl, Select, InputLabel } from "@mui/mater
 export default function FilterDashboard({ onFilterChange }) {
     const [aspect, setAspect] = useState("resumeName");
     const [query, setQuery] = useState("");
-    const [matchType, setMatchType] = useState("exact");
+    const [matchType, setMatchType] = useState("ambiguous");
     const [scoreComparison, setScoreComparison] = useState("equal");
     const [scoreValue, setScoreValue] = useState("");
 
@@ -81,8 +81,8 @@ export default function FilterDashboard({ onFilterChange }) {
                             value={matchType}
                             onChange={handleMatchTypeChange}
                         >
-                            <MenuItem value="exact">Exact Match</MenuItem>
                             <MenuItem value="ambiguous">Ambiguous Match</MenuItem>
+                            <MenuItem value="exact">Exact Match</MenuItem>
                         </Select>
                     </FormControl>
                     <TextField
