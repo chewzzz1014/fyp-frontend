@@ -83,16 +83,16 @@ export default function JobResumeMatchingPage() {
 
     const uniqueResumeSkills = resumeSkills.filter((value, index, self) =>
         index === self.findIndex((t) => (
-            t.text === value.text
+            t.text.toLowerCase() === value.text.toLowerCase()
         ))
     );
     
     const uniqueJobSkills = jobSkills.filter((value, index, self) =>
         index === self.findIndex((t) => (
-            t.text === value.text
+            t.text.toLowerCase() === value.text.toLowerCase()
         ))
     )
-    
+
     const formattedJobResumeScore = formatJobResumeScore(job_resume_score);
 
     return (
