@@ -81,6 +81,18 @@ export default function JobResumeMatchingPage() {
         ?.map(({ text, ...rest }) => ({ text, ...rest }))
         ?.sort((a, b) => a.text.localeCompare(b.text, undefined, { sensitivity: 'base' })) || [];
 
+    const uniqueResumeSkills = resumeSkills.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+            t.text === value.text
+        ))
+    );
+    
+    const uniqueJobSkills = jobSkills.filter((value, index, self) =>
+        index === self.findIndex((t) => (
+            t.text === value.text
+        ))
+    )
+    
     const formattedJobResumeScore = formatJobResumeScore(job_resume_score);
 
     return (
@@ -106,7 +118,7 @@ export default function JobResumeMatchingPage() {
                             Resume Skills
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {resumeSkills.map((skill, index) => (
+                            {uniqueResumeSkills.map((skill, index) => (
                                 <Chip key={index} label={skill.text} color="primary" />
                             ))}
                         </Box>
@@ -116,7 +128,7 @@ export default function JobResumeMatchingPage() {
                             Job Skills
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                            {jobSkills.map((skill, index) => (
+                            {uniqueJobSkills.map((skill, index) => (
                                 <Chip key={index} label={skill.text} color="secondary" />
                             ))}
                         </Box>
