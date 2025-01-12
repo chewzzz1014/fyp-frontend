@@ -99,7 +99,7 @@ export default function JobResumeMatchingPage() {
         <div className="min-h-screen p-8">
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 4, mx: 4 }}>
                 <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-                    Resume
+                    Job-Resume Evaluation
                 </Typography>
                 <Button
                     variant="contained"
