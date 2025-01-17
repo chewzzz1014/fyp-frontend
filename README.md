@@ -26,6 +26,7 @@ npm run dev
 ```
 ## Interfaces
 1. **Dashboard**
+   
 Kanban board
 ![alt text](readme-pics/image-2.png)
 Filtering job-resume card:
@@ -35,16 +36,19 @@ Filtering job-resume card:
 Job-resume card details
 ![alt text](readme-pics/image-3.png)
 2. **Resume Management**
+
 Resume preview
 ![alt text](readme-pics/image-4.png)
 Upload resume
 ![alt text](readme-pics/image-5.png)
 3. **Job Management**
+
 Preview Mode
 ![alt text](readme-pics/image-6.png)
 Edit Mode
 ![alt text](readme-pics/image-7.png)
 4. **Job-Resume Matching**
+
 Select a resume, add new job/select uploaded job and update job application status
 ![alt text](readme-pics/image-8.png)
 Job-resume matching evaluation details page
@@ -52,6 +56,7 @@ Job-resume matching evaluation details page
 5. **Profile**
 ![alt text](readme-pics/image-10.png)
 6. **Authentication**
+
 Login
 ![alt text](readme-pics/image.png)
 Signup
