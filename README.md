@@ -27,34 +27,34 @@ npm run dev
 ## Interfaces
 1. **Dashboard**
 Kanban board
-![alt text](image-2.png)
+![alt text](readme-pics/image-2.png)
 Filtering job-resume card:
  - For string value: ambiguous match or exact match
  - For numerical value: greater than, equal or less than
-![alt text](image-11.png)
+![alt text](readme-pics/image-11.png)
 Job-resume card details
-![alt text](image-3.png)
+![alt text](readme-pics/image-3.png)
 2. **Resume Management**
 Resume preview
-![alt text](image-4.png)
+![alt text](readme-pics/image-4.png)
 Upload resume
-![alt text](image-5.png)
+![alt text](readme-pics/image-5.png)
 3. **Job Management**
 Preview Mode
-![alt text](image-6.png)
+![alt text](readme-pics/image-6.png)
 Edit Mode
-![alt text](image-7.png)
+![alt text](readme-pics/image-7.png)
 4. **Job-Resume Matching**
 Select a resume, add new job/select uploaded job and update job application status
-![alt text](image-8.png)
+![alt text](readme-pics/image-8.png)
 Job-resume matching evaluation details page
-![alt text](image-9.png)
+![alt text](readme-pics/image-9.png)
 5. **Profile**
-![alt text](image-10.png)
+![alt text](readme-pics/image-10.png)
 6. **Authentication**
 Login
-![alt text](image.png)
+![alt text](readme-pics/image.png)
 Signup
-![alt text](image-1.png)
+![alt text](readme-pics/image-1.png)
 Logout
-![alt text](image-12.png)
+![alt text](readme-pics/image-12.png)
